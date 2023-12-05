@@ -1,1 +1,347 @@
 /* Add your CSS here */
+body {
+	margin: 0;
+	padding: 0;
+	display: block;
+}
+
+#fso {
+	height: 100vh;
+}
+
+.header {
+	background-color: #b1aeae;
+	color: #000000;
+	display: flex;
+	height: 90px;
+	white-space: nowrap;
+}
+
+#empty_space {
+	width: 300px;
+	height: 100%;
+	margin: auto;
+	flex: 1;
+}
+
+#title {
+	flex: 2;
+	text-align: center;
+	font-size: 35px;
+	font-weight: bold;
+}
+
+
+#search-bar {
+	display: flex;
+	flex: 1;
+	justify-content: center;
+}
+
+#search-bar input {
+	align-self: center;
+	padding: 5px;
+	font-size: 15px;
+}
+
+#main {
+	display: flex;
+	height: calc(100% - 90px);
+}
+
+.left_bar {
+	width:max-content;
+	border-bottom: 1px solid #000000;
+	border-right: 1px dotted #000000;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav_main div {
+	padding: 20px;
+    margin: 0px;
+    text-align: center;
+	font-size: 25px;
+	color:blue;
+	cursor: pointer;
+}
+
+.nav_main div:hover {
+	background-color: #b1aeae;
+}
+
+.clicked {
+	background-color: #b1aeae;
+}
+
+#right_bar {
+	height: 100%;
+	width: 100%;
+	display: block;
+	overflow: auto;
+}
+
+#topbar{
+	display: flex;
+	padding: 20px 50px 0px;
+	align-items: baseline;
+	justify-content: space-between;
+	white-space: nowrap;
+}
+
+button, #post_question_button, #post_answer_button{
+	max-width: 150px;
+	background-color: blue;
+	color: white;
+	border-radius: 125px;
+	padding: 15px;
+	white-space: nowrap;
+	height: 50px;
+	align-self: center;
+	flex: 1;
+}
+
+#sort {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0px 75px 0px;
+	white-space: nowrap;
+	border-bottom: 1px dotted black;
+}
+
+#sort button {
+	background-color: white;
+	color: #000000;
+	border-radius: 0%;
+	font-size: 15px;
+}
+
+#numberOfQuestions {
+	font-size: 20px;
+	margin-bottom: 50px;
+}
+
+.questionDiv {
+	border: 1px dotted black;
+	padding: 0 20px 0;
+	height: fit-content;
+	justify-content: space-between;
+	display: flex;
+}
+
+.questionStats {
+	width: fit-content;
+	height: 100%;
+	padding: 10px;
+	text-align: center;
+}
+
+.questionStats p {
+	font-size: 20px;
+	white-space: nowrap;
+}
+
+.questionTitle {
+	flex-grow: 1;
+	width: 100px;
+	height: fit-content;
+}
+
+.questionTitle div {
+	padding: 30px 20px 0px;
+	margin: 0px;
+	color:darkcyan;
+	font-size: 30px;
+}
+
+.questionTitle div:hover {
+	color: aquamarine;
+	cursor: pointer;
+}
+
+.tags {
+	display: flex;
+	padding: 0px 20px;
+	margin: 0px;
+	flex-wrap: wrap;
+}
+
+.tags p {
+	padding: 10px;
+	margin: 10px;
+	border: 1px solid black;
+	border-radius: 10px;
+	font-size: 20px;
+	color: white;
+	background-color: gray;
+}
+
+#newQuestionForm {
+	padding: 0px 60px 20px;
+}
+
+#newQuestionForm h2 {
+	margin: 30px 0px 0px;
+	font-size: 30px;
+	padding-left: 10px;
+	
+}
+
+#newQuestionForm p {
+	font-style: italic;
+	padding-left: 30px;
+}
+
+.wordbox {
+	width:100%;
+	font-size: 15px;
+	padding: 20px 6px;
+}
+
+.wordarea {
+	width:100%;
+	height: 250px;
+	font-size: 15px;
+	padding: 20px 6px;
+	overflow-y: auto;
+	resize: none;
+}
+
+.error-message {
+	color:red;
+	margin: 10px 0px 0px 10px;
+	background-color: yellow;
+	width: fit-content;
+}
+
+#bottom {
+	display:flex;
+	justify-content: space-between;
+	margin: 30px 0px 0px;
+}
+
+.tagstopbar {
+	display: flex;
+	padding: 0px 50px;
+	justify-content: space-between;
+	white-space: nowrap;
+}
+
+#tagsDiv {
+	padding-left: 5%;
+	padding-right: 5%;
+	justify-content: space-around;
+	width: 100%;
+}
+
+.tagBox {
+	flex: 0 0 25%;
+	min-height: 90px;
+	min-width: 180px;
+	height: fit-content;
+	margin: 20px;
+	padding: 7px;
+	border: 1px dotted black;
+	border-radius: 8px;
+	font-size: 20px;
+}
+
+.tagName {
+	color: blue;
+	cursor: pointer;
+	text-align: center;
+	padding: 10px;
+}
+
+
+
+.numOfQuestions {
+	text-align: center;
+}
+
+#qtopbar {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 20px;
+}
+
+#ansNum {
+	display: flex;
+	white-space: nowrap;
+	align-items: center;
+	padding: 10px 30px;
+	flex: 1;
+}
+
+#qLabel {
+	padding: 10px;
+	flex: 6;
+}
+
+#qSecondBar{
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 1px dotted black;
+	padding: 0 20px;
+}
+
+#qSecondBar h2 {
+	padding: 10px 30px;
+	white-space: nowrap;
+	flex: 1;
+	align-items: center;
+	display: flex;
+}
+
+#userPostTime {
+	align-self: flex-end;
+	flex: 1;
+}
+
+#qDescription {
+	padding: 0px 20px;
+	flex: 6;
+	font-size: 20px;
+}
+
+#answerButton {
+	margin: 20px;
+}
+
+.ansDiv {
+	display: flex;
+	justify-content: space-between;
+	border: 1px dotted black;
+}
+
+.ansDiv p {
+	padding: 10px;
+}
+
+.ansDiv .ansAuthor {
+	display: flex;
+	width: 20%;
+}
+
+.ansDiv .ansDesc {
+	display: flex;
+	flex: 80%;
+
+}
+
+#newAnswerForm {
+	padding: 20px 60px;
+}
+
+#newAnswerForm label {
+	font-size: 30px;
+	padding-left: 10px;
+}
+
+#noQText {
+	padding: 30px;
+}
