@@ -57,15 +57,7 @@ export default function RightContent(props) {
 			/>;
 			break;
 		default:
-			pageClass = <Home 
-			sort={props.sort}
-			search={props.search} 
-			handlePageSwap={props.handlePageSwap} 
-			handleSortChange={props.handleSortChange} 
-			handleQuestionChange={handleQuestionChange}
-			tag={tag}
-			TopBarLabel={props.TopBarLabel}
-			/>
+			pageClass = <> </>;
 			break;
 	}
 	return (pageClass);

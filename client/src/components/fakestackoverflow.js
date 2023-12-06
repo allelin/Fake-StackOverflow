@@ -2,9 +2,10 @@ import { useState } from 'react';
 import Header from './Main/header';
 import LeftNav from './Main/leftnav';
 import RightContent from './Main/rightcontent';
+import Welcome from './Main/welcome';
 
 export default function FakeStackOverflow() {
-	const [page, setPage] = useState("home");
+	const [page, setPage] = useState("welcome");
 	const [sort, setSort] = useState("newest");
 	const [TopBarLabel, setTopBarLabel] = useState("All Questions");
 	const [QClicked, setQClicked] = useState(true);
@@ -53,28 +54,38 @@ export default function FakeStackOverflow() {
 		setTopBarLabel(label);
 	}
 
-	return (
-	<div id="fso">
-		<Header 
-		handleSearch={handleSearch} 
-		handleSortChange={handleSortChange} 
-		handlePageSwap={handlePageSwap}/>
-		<div id="main">
-			<LeftNav 
-			QClicked={QClicked}
-			TagClicked={TagClicked}
-			handleQClicked={handleQClicked} 
-			handleTagClicked={handleTagClicked}
+	let pageClass;
+	switch(page) {
+		case "welcome":
+			pageClass = <Welcome 
 			/>
-			<RightContent 
-			page={page} 
-			search={search} 
-			sort={sort} 
+			break;
+		default:
+			pageClass = 
+		<div id="fso">
+			<Header 
+			handleSearch={handleSearch} 
 			handleSortChange={handleSortChange} 
-			handlePageSwap={handlePageSwap}
-			TopBarLabel={TopBarLabel}
-			/>
-		</div>
-	</div>
-	);
+			handlePageSwap={handlePageSwap}/>
+			<div id="main">
+				<LeftNav 
+				QClicked={QClicked}
+				TagClicked={TagClicked}
+				handleQClicked={handleQClicked} 
+				handleTagClicked={handleTagClicked}
+				/>
+				<RightContent 
+				page={page} 
+				search={search} 
+				sort={sort} 
+				handleSortChange={handleSortChange} 
+				handlePageSwap={handlePageSwap}
+				TopBarLabel={TopBarLabel}
+				/>
+			</div>
+		</div>;
+			break;
+	}
+
+	return (pageClass);
 }
