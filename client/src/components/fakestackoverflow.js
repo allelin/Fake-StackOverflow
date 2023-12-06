@@ -11,7 +11,7 @@ export default function FakeStackOverflow() {
 	const [QClicked, setQClicked] = useState(true);
 	const [TagClicked, setTagClicked] = useState(false);
 	const [search, setSearch] = useState([]);
-	const [userLogin, setUserLogin] = useState(true)
+	const [userLogin, setUserLogin] = useState(true);
 
 	const handlePageSwap = (page) => {
 		if(page === "home") {
