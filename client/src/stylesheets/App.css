@@ -50,14 +50,15 @@ body {
 }
 
 .left_bar {
-	width:max-content;
+	width: max-content;
 	border-bottom: 1px solid #000000;
 	border-right: 1px dotted #000000;
 }
 
-nav {
+.nav_main {
     display: flex;
     flex-direction: column;
+	height: 100%;
 }
 
 .nav_main div {
@@ -77,11 +78,18 @@ nav {
 	background-color: #b1aeae;
 }
 
+#logout_button {
+	align-self: initial;
+	margin-top: auto;
+	max-height: 50px;
+}
+
 #right_bar {
 	height: 100%;
 	width: 100%;
 	display: block;
-	overflow: auto;
+	/* overflow: auto; */
+	/* overflow-y: auto hidden; */
 }
 
 #topbar{
@@ -123,6 +131,24 @@ button, #post_question_button, #post_answer_button{
 #numberOfQuestions {
 	font-size: 20px;
 	margin-bottom: 50px;
+}
+
+#question-container {
+	/* overflow: auto; */
+	overflow-y: auto;
+	max-height: 75%;
+	/* height: 900px; */
+}
+
+#answer-container {
+	overflow-y: auto;
+	max-height: 75%;
+}
+
+.navigateElements {
+	display: flex;
+	justify-content: space-evenly;
+	margin-top: 10px;
 }
 
 .questionDiv {

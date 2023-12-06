@@ -4,6 +4,11 @@ import axios from 'axios';
 export default function Answers(props) {
     const [answerHTMLList, setAnswerHTMLList] = useState([]);
     const question = props.question;
+	const [sStart, setSStart] = useState(0);
+
+	const changeSStart = (num) => {
+		setSStart(sStart + num);
+	}
 
     useEffect(() => {
         const ansList = [];
@@ -62,10 +67,20 @@ export default function Answers(props) {
                     </p>
                 </div>
             </div>
-            {answerHTMLList}
+			<div id="answer-container">
+            	{answerHTMLList.slice(sStart, sStart + 5)}
+			</div>
             <button id="answerButton"
             onClick={() => props.handlePageSwap("answerform")}
             >Answer Question</button>
+			<div className="navigateElements">
+				{sStart > 0 ? <button type="button"
+				onClick={() => changeSStart(-5)}
+				>Prev</button> : <></>}
+				{sStart < (answerHTMLList.length - 5) ? <button type="button" 
+				onClick={() => changeSStart(5)}
+				>Next</button> : <></>}
+			</div>
         </div>
     );
 }

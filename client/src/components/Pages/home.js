@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 export default function Home(props) {
 	const [questionHTMLList, setQuestionHTMLList] = useState([]);
+	const [qStart, setQStart] = useState(0);
 
 	const handleAnswer = async (question) => {
 		const qid = {
@@ -20,6 +21,11 @@ export default function Home(props) {
 
 	const handleSortButtons = (sortName) => {
 		props.handleSortChange(sortName);
+		setQStart(0);
+	}
+
+	const changeQStart = (num) => {
+		setQStart(qStart + num);
 	}
 
 	useEffect(() => {
@@ -94,13 +100,15 @@ export default function Home(props) {
 		return () => clearInterval(interval);
 	}, [questionHTMLList]);
 
+	// console.log(qStart);
+
 	return (
 		<div id="right_bar">
 			<div id="topbar">
 				<div><h2>{props.TopBarLabel}</h2></div>
-				<button type="button" id="askbutton"
+				{props.userLogin ? <button type="button" id="askbutton"
 					onClick={() => props.handlePageSwap("askquestion")}
-				>Ask Question</button>
+				>Ask Question</button> : <></>}
 			</div>
 			<div id="sort">
 				<div id="numberOfQuestions">{questionHTMLList.length + " questions"}</div>
@@ -120,7 +128,17 @@ export default function Home(props) {
 					</tbody>
 				</table>
 			</div>
-			{questionHTMLList.length > 0 ? questionHTMLList : <h2 id="noQText">No Questions Found</h2>}
+			<div id="question-container">
+				{questionHTMLList.length > 0 ? questionHTMLList.slice(qStart, qStart + 5) : <h2 id="noQText">No Questions Found</h2>}
+			</div>
+			<div className="navigateElements">
+				{qStart > 0 ? <button type="button"
+				onClick={() => changeQStart(-5)}
+				>Prev</button> : <></>}
+				{qStart < (questionHTMLList.length - 5) ? <button type="button" 
+				onClick={() => changeQStart(5)}
+				>Next</button> : <></>}
+			</div>
 		</div>
 	);
 }

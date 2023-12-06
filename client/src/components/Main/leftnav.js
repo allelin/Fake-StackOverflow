@@ -1,4 +1,8 @@
 export default function LeftNav(props) {
+	const handleLogout = () => {
+		props.handlePageSwap("welcome")
+	}
+
     return (
 		<div className="left_bar">
 			<nav className="nav_main">
@@ -12,6 +16,9 @@ export default function LeftNav(props) {
 				onClick={props.handleTagClicked}
 				>Tags
 				</div>
+				<button type="button" id="logout_button"
+				onClick={handleLogout}
+				>Logout</button>
 			</nav>
 		</div>
 	);
