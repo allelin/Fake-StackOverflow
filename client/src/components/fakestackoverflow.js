@@ -5,12 +5,13 @@ import RightContent from './Main/rightcontent';
 import Welcome from './Main/welcome';
 
 export default function FakeStackOverflow() {
-	const [page, setPage] = useState("welcome");
+	const [page, setPage] = useState("home");
 	const [sort, setSort] = useState("newest");
 	const [TopBarLabel, setTopBarLabel] = useState("All Questions");
 	const [QClicked, setQClicked] = useState(true);
 	const [TagClicked, setTagClicked] = useState(false);
 	const [search, setSearch] = useState([]);
+	const [userLogin, setUserLogin] = useState(true)
 
 	const handlePageSwap = (page) => {
 		if(page === "home") {
@@ -73,6 +74,7 @@ export default function FakeStackOverflow() {
 				TagClicked={TagClicked}
 				handleQClicked={handleQClicked} 
 				handleTagClicked={handleTagClicked}
+				handlePageSwap={handlePageSwap}
 				/>
 				<RightContent 
 				page={page} 
@@ -81,6 +83,7 @@ export default function FakeStackOverflow() {
 				handleSortChange={handleSortChange} 
 				handlePageSwap={handlePageSwap}
 				TopBarLabel={TopBarLabel}
+				userLogin={userLogin}
 				/>
 			</div>
 		</div>;
