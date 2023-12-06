@@ -345,3 +345,114 @@ button, #post_question_button, #post_answer_button{
 #noQText {
 	padding: 30px;
 }
+
+.welcome-container {
+	text-align: center;
+	margin-top: 15%;
+	
+}
+
+.welcome-container h1 {
+	font-size: 50px;
+}	
+
+.welcome-buttons {
+	background-color: white;
+	color: black;
+	display: flex;
+	flex-direction: column;
+	margin : 10px;
+	padding: 10px;
+	border-radius: 10px;
+	
+}
+
+.welcome-login {
+	background-color: white;
+	color: black;
+	width: 100%;
+	padding: 10px;
+	border-radius: 10px 10px 0px 0px;
+	font-size: 20px;
+	max-width: 200px;
+}
+
+.welcome-signup {
+	background-color: white;
+	color: black;
+	width: 100%;
+	padding: 10px;
+	border-radius: 2px;
+	font-size: 20px;
+	max-width: 200px;
+}
+
+.welcome-guest {
+	background-color: white;
+	color: black;
+	padding: 15px;
+	border-radius: 0px 0px 10px 10px;
+	font-size: 20px;
+	max-width: 200px;
+}
+
+.welcome-login:hover, .welcome-signup:hover, .welcome-guest:hover {
+	background-color: #b1aeae;
+	cursor: pointer;
+}
+
+.signup-container {
+	text-align: center;
+	margin-top: 15%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.signup-container h1 {
+	font-size: 50px;
+}
+
+.signup-container form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.signup-label {
+	font-size: 20px;
+	margin: 10px;
+}
+
+.signup-button {
+	font-size: 20px;
+	margin: 10px;
+}
+
+.login-container {
+	text-align: center;
+	margin-top: 15%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.login-container h1 {
+	font-size: 50px;
+}
+
+.login-container form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.login-label {
+	font-size: 20px;
+	margin: 10px;
+}
+
+.login-button {
+	font-size: 20px;
+	margin: 10px;
+}

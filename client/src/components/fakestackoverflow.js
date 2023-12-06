@@ -3,6 +3,8 @@ import Header from './Main/header';
 import LeftNav from './Main/leftnav';
 import RightContent from './Main/rightcontent';
 import Welcome from './Main/welcome';
+import Signup from './Main/signup';
+import Login from './Main/login';
 
 export default function FakeStackOverflow() {
 	const [page, setPage] = useState("welcome");
@@ -57,7 +59,7 @@ export default function FakeStackOverflow() {
 	let pageClass;
 	switch(page) {
 		case "welcome":
-			pageClass = <Welcome 
+			pageClass = <Login 
 			/>
 			break;
 		default:
