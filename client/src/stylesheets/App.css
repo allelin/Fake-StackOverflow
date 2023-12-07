@@ -483,3 +483,49 @@ button, #post_question_button, #post_answer_button{
 	padding: 5px;
 	margin-bottom: 10px;
 }
+
+.login-container {
+	display: flex;
+	height: 100vh;
+	background: linear-gradient(to right, rgb(219, 163, 90), rgb(223, 121, 38));
+}
+
+
+
+.login {
+	text-align: center;
+	margin-top: 15%;
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+	border: 1px solid black;
+	border-radius: 10px;
+	background-color: rgb(240, 196, 161);
+	padding: 20px;
+	width: 20%;
+}
+
+.login h1 {
+	font-size: 40px;
+	padding: 8px;
+}
+#login-submit {
+	font-size: 20px;
+	margin: 10px;
+	min-width: none;;
+	background-color: rgb(245, 134, 43);
+	color: black;
+	font-weight: bold;
+}
+
+.login-field {
+	text-align: left;
+	font-size: 25px;
+	margin-bottom: 7px;
+}
+
+.login-input {
+	font-size: 20px;
+	padding: 5px;
+	margin-bottom: 10px;
+}

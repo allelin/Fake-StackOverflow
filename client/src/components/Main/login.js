@@ -2,18 +2,15 @@
 
 export default function Login(props) {
     return (
-        <form className="login-container" onSubmit={props.handleSubmit}>
-            
-            <h1>Log in</h1>
-            <label className = "login-label">
-                Email:
-                <input type="email" name="email"  />
-            </label>
-            <label className = "login-label">
-                Password:
-                <input type="password" name="password"  />
-            </label>
-            <button className = "login-button" type="submit">Sign up</button>
-        </form>
+        <div className="login-container">
+            <form className="login">
+                <h1>Login</h1>
+                <label className="login-field">Username</label>
+                <input type="email" className="login-input" placeholder="Username" />
+                <label className="login-field">Password</label>
+                <input type="password" className="login-input" placeholder="Password" />
+                <button id="login-submit" type="submit">Login</button>
+            </form>
+        </div>
     )
 }
