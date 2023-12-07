@@ -374,8 +374,10 @@ button, #post_question_button, #post_answer_button{
 
 .welcome-container {
 	text-align: center;
-	margin-top: 15%;
-	
+	/* margin-top: 15%; */
+	padding: 15%;
+	background: linear-gradient(to right, rgb(219, 163, 90), rgb(223, 121, 38));
+	height: 100vh;
 }
 
 .welcome-container h1 {
@@ -383,7 +385,6 @@ button, #post_question_button, #post_answer_button{
 }	
 
 .welcome-buttons {
-	background-color: white;
 	color: black;
 	display: flex;
 	flex-direction: column;
@@ -434,13 +435,14 @@ button, #post_question_button, #post_answer_button{
 	font-family: Raleway, sans-serif;
 }
 
-body {
-	background: linear-gradient(to right, rgb(219, 163, 90), rgb(223, 121, 38));		
-}
+/* body {
+	background: linear-gradient(to right, rgb(219, 163, 90), rgb(223, 121, 38));
+} */
 
 .signup-container {
 	display: flex;
 	height: 100vh;
+	background: linear-gradient(to right, rgb(219, 163, 90), rgb(223, 121, 38));
 }
 
 .signup {
