@@ -427,58 +427,57 @@ button, #post_question_button, #post_answer_button{
 	cursor: pointer;
 }
 
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,700');
+
+* {
+	box-sizing: border-box;
+	font-family: Raleway, sans-serif;
+}
+
+body {
+	background: linear-gradient(to right, rgb(219, 163, 90), rgb(223, 121, 38));		
+}
+
 .signup-container {
+	display: flex;
+	height: 100vh;
+}
+
+.signup {
+	/* min-height: 100vh; */
 	text-align: center;
 	margin-top: 15%;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	margin: auto;
+	border: 1px solid black;
+	border-radius: 10px;
+	background-color: rgb(240, 196, 161);
+	padding: 20px;
+	width: 20%;
 }
 
-.signup-container h1 {
-	font-size: 50px;
+.signup h1 {
+	font-size: 40px;
+	padding: 8px;
 }
-
-.signup-container form {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.signup-label {
+#signup-submit {
 	font-size: 20px;
 	margin: 10px;
+	min-width: none;;
+	background-color: rgb(245, 134, 43);
+	color: black;
+	font-weight: bold;
 }
 
-.signup-button {
+.signup-field {
+	text-align: left;
+	font-size: 25px;
+	margin-bottom: 7px;
+}
+
+.signup-input {
 	font-size: 20px;
-	margin: 10px;
-}
-
-.login-container {
-	text-align: center;
-	margin-top: 15%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.login-container h1 {
-	font-size: 50px;
-}
-
-.login-container form {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.login-label {
-	font-size: 20px;
-	margin: 10px;
-}
-
-.login-button {
-	font-size: 20px;
-	margin: 10px;
+	padding: 5px;
+	margin-bottom: 10px;
 }
