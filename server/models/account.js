@@ -14,7 +14,7 @@ var AccountSchema = new Schema(
 AccountSchema
     .virtual('url')
     .get(function () {
-        return '/account/' + this._id;
+        return '/posts/account/' + this._id;
     });
 
 //Export model
