@@ -7,7 +7,7 @@ import Signup from './Main/signup';
 import Login from './Main/login';
 
 export default function FakeStackOverflow() {
-	const [page, setPage] = useState("home");
+	const [page, setPage] = useState("welcome");
 	const [sort, setSort] = useState("newest");
 	const [TopBarLabel, setTopBarLabel] = useState("All Questions");
 	const [QClicked, setQClicked] = useState(true);
@@ -60,6 +60,15 @@ export default function FakeStackOverflow() {
 	let pageClass;
 	switch(page) {
 		case "welcome":
+			pageClass = <Welcome
+			handlePageSwap={handlePageSwap}
+			/>
+			break;
+		case "signup":
+			pageClass = <Signup 
+			/>
+			break;
+		case "login":
 			pageClass = <Login 
 			/>
 			break;
