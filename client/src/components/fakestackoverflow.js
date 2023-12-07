@@ -59,7 +59,7 @@ export default function FakeStackOverflow() {
 	let pageClass;
 	switch(page) {
 		case "welcome":
-			pageClass = <Login 
+			pageClass = <Signup 
 			/>
 			break;
 		default:
