@@ -221,6 +221,7 @@ app.post('/postquestion', (req, res) => {
 	// console.log(req.body);
 	let newQuestion = Question({
 		title: req.body.title,
+		summary: req.body.summary,
 		text: req.body.text,
 		tags: req.body.tags,
 		asked_by: req.body.username,

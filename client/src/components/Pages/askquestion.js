@@ -5,6 +5,7 @@ export default function AskQuestion(props) {
 	const [error, setError] = useState({
 		qTitle: '',
 		qText: '',
+		qSummary: '',
 		qTags: '',
 		username: '',
 	})
@@ -15,12 +16,14 @@ export default function AskQuestion(props) {
 		const formData = new FormData(event.target);
 		const qTitle = formData.get("qTitle").trim();
 		const qText = formData.get("qText").trim();
+		const qSummary = formData.get("qSummary").trim();
 		const username = formData.get("username").trim();
 		const tagArr = formData.get("qTags").trim().split(" ").filter(Boolean).map(tagName => tagName.toLowerCase());
 
 		const newError = {
 			qTitle: '',
 			qText: '',
+			qSummary: '',
 			qTags: '',
 			username: '',
 		}
@@ -30,6 +33,25 @@ export default function AskQuestion(props) {
 		} else if(qTitle.length > 100) {
 			newError.qTitle = "Question Title must be less than 100 words!";
 		}
+
+		if(!qSummary) {
+			newError.qSummary = "Question Summary required!";
+		} 
+		if(qSummary.length > 140) {
+			newError.qSummary = "Question Summary must be less than 140 words!";
+		} 
+		// else {
+		// 	const hyperlinkFormat = /\[([^\]]*)\]\(([^)]*)\)/g;
+		// 	const matches = qSummary.matchAll(hyperlinkFormat);
+		// 	for (const match of matches) {
+		// 		if (match[1] === "" || match[2] === "" || (!match[2].startsWith("https://") && !match[2].startsWith("http://"))) {
+		// 			newError.qSummary = "Invalid hyperlink format. Please use [text](https://google.com) format for hyperlinks.";
+		// 			break;
+		// 		}
+		// 	}
+		// }
+
+
 
 		if(!qText) {
 			newError.qText = "Question Text required!";
@@ -63,6 +85,7 @@ export default function AskQuestion(props) {
 			const newQuestion = {
 				title: qTitle,
 				text: qText,
+				summary: qSummary,
 				tags: tagArr,
 				username: username
 			}
@@ -85,6 +108,10 @@ export default function AskQuestion(props) {
 				placeholder="How can I change an element's class with JavaScript?" 
 				/>
 				{error.qTitle && <div className="error-message">{error.qTitle}</div>}
+				<h2>Question Summary*</h2>
+				<p>Limit summary to 140 characters or less</p>
+				<input type="text" name="qSummary" className="wordbox" placeholder="I want to change the class of an element when I click on it. How can I do this?" />
+				{error.qSummary && <div className="error-message">{error.qSummary}</div>}
 				<h2>Question Text*</h2>
 				<p>Add details</p>
 				<textarea name="qText" className="wordarea" placeholder="How can I change the class of an HTML element in response to an onclick or any other events using JavaScript?" 
