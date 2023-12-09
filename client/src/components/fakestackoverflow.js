@@ -82,7 +82,8 @@ export default function FakeStackOverflow() {
 			<Header 
 			handleSearch={handleSearch} 
 			handleSortChange={handleSortChange} 
-			handlePageSwap={handlePageSwap}/>
+			handlePageSwap={handlePageSwap}
+			user={user}/>
 			<div id="main">
 				<LeftNav 
 				QClicked={QClicked}

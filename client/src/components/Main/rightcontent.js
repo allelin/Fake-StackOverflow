@@ -4,6 +4,7 @@ import Home from "../Pages/home";
 import Tags from "../Pages/tags";
 import Answers from "../Pages/answers";
 import AnswerForm from "../Pages/answerform";
+import Profile from "../Pages/profile";
 
 
 export default function RightContent(props) {
@@ -57,6 +58,10 @@ export default function RightContent(props) {
 			handlePageSwap={props.handlePageSwap}
 			handleQuestionChange={handleQuestionChange}
 			/>;
+			break;
+		case "profile":
+			pageClass = <Profile
+			/>
 			break;
 		default:
 			pageClass = <> </>;
