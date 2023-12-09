@@ -15,7 +15,13 @@ export default function Answers(props) {
         const promise = question.answers.map((answerid) => {
             return axios.get(`http://localhost:8000/answer/${answerid}`, { withCredentials: true })
                 .then((res) => {
-                    ansList.push(res.data);
+                    const answer = res.data;
+                    
+                    return axios.get(`http://localhost:8000/comments/answer/${answer._id}`, { withCredentials: true })
+                        .then((commentRes) => {
+                            answer.comments = commentRes.data;
+                            ansList.push(res.data);
+                        })
                 })
                 .catch((err) => {
                     console.log(err);
@@ -66,6 +72,11 @@ export default function Answers(props) {
                         {" asked " + getTimeDisplay(new Date(question.ask_date_time), new Date())}
                     </p>
                 </div>
+            </div>
+            <div id = "qComments">
+                <button id = "commentButton" 
+                onClick={() => props.handlePageSwap("commentform")}
+                >Add Comment</button>
             </div>
 			<div id="answer-container">
             	{answerHTMLList.slice(sStart, sStart + 5)}
