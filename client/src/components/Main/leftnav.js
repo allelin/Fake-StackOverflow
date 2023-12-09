@@ -1,6 +1,10 @@
+import axios from 'axios'
+
 export default function LeftNav(props) {
-	const handleLogout = () => {
-		props.handlePageSwap("welcome")
+	const handleLogout = async () => {
+		let logout = await axios.get(`http://localhost:8000/logout`, { withCredentials: true });
+		props.setUser(null);
+		props.handlePageSwap("welcome");
 	}
 
     return (
@@ -16,9 +20,9 @@ export default function LeftNav(props) {
 				onClick={props.handleTagClicked}
 				>Tags
 				</div>
-				<button type="button" id="logout_button"
+				{props.user ? <button type="button" id="logout_button"
 				onClick={handleLogout}
-				>Logout</button>
+				>Logout</button> : <></>}
 			</nav>
 		</div>
 	);

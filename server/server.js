@@ -21,12 +21,17 @@ db.on('connected', () => {
   console.log('Connected to MongoDB database');
 });
 
-app.use(cors());
+app.use(cors({
+	origin: 'http://localhost:3000',
+	credentials: true
+}));
 app.use(express.json());
 app.use(
 	session({
 		secret: "nxS3SzvbSwFf830RahYxjIWbmh6HTH9O",
-		cookie:  { httpOnly: true, secure: true},
+		// cookie:  { httpOnly: true, secure: false},
+		cookie: {},
+		// cookie: {secure: false},
 		resave: false,
 		saveUninitialized: false
 	})
@@ -34,6 +39,10 @@ app.use(
 
 // get questions
 app.get('/questions/:sortby', (req, res) => {
+	// if(req.session) {
+	// 	console.log(req.session);
+	// }
+
 	switch(req.params.sortby) {
 		case "newest":
 			Question.find()
@@ -207,12 +216,12 @@ const getTags = function(req, res, next) {
 	Promise.all(promises)
 	.then(tags => {
 		req.body.tags = tags;
-		next();
 	})
 	.catch(err => {
 		console.error(err);
-		next();
 	});
+
+	next();
 }
 
 app.use('/postquestion', getTags);
@@ -234,13 +243,9 @@ app.post('/postquestion', (req, res) => {
 
 
 app.get('/tags', async (req, res) => {
-	try {
-		let questionList = await Question.find()
-		.populate('tags')
-		.exec();
-	} catch(error) {
-		console.error(error);
-	}
+	let questionList = await Question.find()
+	.populate('tags')
+	.exec();
 
 	Tag.find()
 	.exec()
@@ -340,8 +345,11 @@ app.get('/login/:email/:password', (req, res) => {
 			bcrypt.compare(req.params.password, account.passwordHash)
 			.then(result => {
 				if(result) {
+					// console.log("hi");
 					req.session.user = account.username;
-					req.session.acctype = account.acctype;
+					req.session.acctype = account.accType;
+					req.session.email = account.email;
+					// console.log(req.session);
 					res.send(account);
 				} else {
 					res.send(false);
@@ -353,8 +361,38 @@ app.get('/login/:email/:password', (req, res) => {
 		}
 	})
 	.catch(err => console.error(err));
-}
-);
+});
+
+app.get(`/verifyuser`, (req, res) => {
+	if(req.session.user) {
+		// console.log(req.session);
+		// res.send(true);
+		Account.findOne({email: req.session.email})
+		.then(account => {
+			if(account) {
+				res.send(account);
+			} else {
+				res.send(false);
+			}
+		})
+	} else {
+		res.send(false);
+	}
+});
+
+app.get(`/logout`, (req,res) => {
+	// console.log(req.session);
+	// if(req.session.user) {
+	req.session.destroy(err => {
+		if(err) {
+			console.error(err);
+		} else {
+			// console.log(req.session);
+			res.send("Logged out");
+		}
+	});
+	// }
+});
 
 app.listen(port, () => {
 	console.log(`Server is listening on port ${port}`);

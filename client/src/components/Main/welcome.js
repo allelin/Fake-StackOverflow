@@ -1,6 +1,18 @@
-
+import { useEffect } from "react"
+import axios from 'axios'
 
 export default function Welcome(props) {
+	useEffect(() => {
+		axios.get(`http://localhost:8000/verifyuser`, { withCredentials: true })
+		.then(res => {
+			if(res.data){
+				// console.log(res.data);
+				props.setUser(res.data);
+				props.handlePageSwap("home");
+			}
+		});
+	});
+
 	return (
 		<div className="welcome-container">
 			<h1>Welcome to Fake StackOverflow!</h1>

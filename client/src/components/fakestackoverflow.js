@@ -13,7 +13,7 @@ export default function FakeStackOverflow() {
 	const [QClicked, setQClicked] = useState(true);
 	const [TagClicked, setTagClicked] = useState(false);
 	const [search, setSearch] = useState([]);
-	const [userLogin, setUserLogin] = useState(true);
+	const [user, setUser] = useState(null);
 
 	const handlePageSwap = (page) => {
 		if(page === "home") {
@@ -62,6 +62,7 @@ export default function FakeStackOverflow() {
 		case "welcome":
 			pageClass = <Welcome
 			handlePageSwap={handlePageSwap}
+			setUser={setUser}
 			/>
 			break;
 		case "signup":
@@ -72,6 +73,7 @@ export default function FakeStackOverflow() {
 		case "login":
 			pageClass = <Login 
 			handlePageSwap={handlePageSwap}
+			setUser={setUser}
 			/>
 			break;
 		default:
@@ -88,6 +90,8 @@ export default function FakeStackOverflow() {
 				handleQClicked={handleQClicked} 
 				handleTagClicked={handleTagClicked}
 				handlePageSwap={handlePageSwap}
+				user={user}
+				setUser={setUser}
 				/>
 				<RightContent 
 				page={page} 
@@ -96,7 +100,7 @@ export default function FakeStackOverflow() {
 				handleSortChange={handleSortChange} 
 				handlePageSwap={handlePageSwap}
 				TopBarLabel={TopBarLabel}
-				userLogin={userLogin}
+				user={user}
 				/>
 			</div>
 		</div>;

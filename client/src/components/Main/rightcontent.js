@@ -29,7 +29,7 @@ export default function RightContent(props) {
 			handleQuestionChange={handleQuestionChange}
 			tag={tag}
 			TopBarLabel={props.TopBarLabel}
-			userLogin={props.userLogin}
+			user={props.user}
 			/>
 			break;
 		case "askquestion":

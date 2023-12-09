@@ -30,7 +30,7 @@ export default function Home(props) {
 
 	useEffect(() => {
 		if(props.sort !== "search" && props.sort !== "tag") {
-			axios.get(`http://localhost:8000/questions/${props.sort}`)
+			axios.get(`http://localhost:8000/questions/${props.sort}`, { withCredentials: true })
 			.then(res => {
 				const questionsData = res.data;
 
@@ -48,7 +48,7 @@ export default function Home(props) {
 
 	useEffect(() => {
 		if(props.sort === "search") {
-			axios.get(`http://localhost:8000/questions/${props.sort}?search=${(props.search.join(','))}`)
+			axios.get(`http://localhost:8000/questions/${props.sort}?search=${(props.search.join(','))}`, { withCredentials: true })
 			.then(res => {
 				const questionsData = res.data;
 
@@ -66,7 +66,7 @@ export default function Home(props) {
 
 	useEffect(() => {
 		if(props.sort === "tag") {
-			axios.get(`http://localhost:8000/questions/${props.sort}?tagName=${props.tag.name}`)
+			axios.get(`http://localhost:8000/questions/${props.sort}?tagName=${props.tag.name}`, { withCredentials: true })
 			.then(res => {
 				const questionsData = res.data;
 
@@ -101,12 +101,13 @@ export default function Home(props) {
 	}, [questionHTMLList]);
 
 	// console.log(qStart);
+	// console.log(props.user);
 
 	return (
 		<div id="right_bar">
 			<div id="topbar">
 				<div><h2>{props.TopBarLabel}</h2></div>
-				{props.userLogin ? <button type="button" id="askbutton"
+				{props.user ? <button type="button" id="askbutton"
 					onClick={() => props.handlePageSwap("askquestion")}
 				>Ask Question</button> : <></>}
 			</div>
