@@ -216,12 +216,12 @@ const getTags = function (req, res, next) {
 	Promise.all(promises)
 		.then(tags => {
 			req.body.tags = tags;
+			next();
 		})
 		.catch(err => {
 			console.error(err);
+			next();
 		});
-
-	next();
 }
 
 app.use('/postquestion', getTags);
