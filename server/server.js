@@ -2,6 +2,8 @@
 const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const session = require('express-session')
 
 const app = express()
 const port = 8000
@@ -9,6 +11,7 @@ const port = 8000
 let Answer = require('./models/answers');
 let Question = require('./models/questions');
 let Tag = require('./models/tags');
+let Account = require('./models/account');
 
 //connect to MongoDB database
 mongoose.connect("mongodb://127.0.0.1:27017/fake_so", {useNewUrlParser: true, useUnifiedTopology: true});
@@ -20,6 +23,14 @@ db.on('connected', () => {
 
 app.use(cors());
 app.use(express.json());
+app.use(
+	session({
+		secret: "nxS3SzvbSwFf830RahYxjIWbmh6HTH9O",
+		cookie:  { httpOnly: true, secure: true},
+		resave: false,
+		saveUninitialized: false
+	})
+);
 
 // get questions
 app.get('/questions/:sortby', (req, res) => {
@@ -189,7 +200,7 @@ const getTags = function(req, res, next) {
 			}
 		})
 		.catch(err => {
-			console.log('Error:', err);
+			console.error(err);
 		});
 	});
 
@@ -199,7 +210,7 @@ const getTags = function(req, res, next) {
 		next();
 	})
 	.catch(err => {
-		console.error('Error:', err);
+		console.error(err);
 		next();
 	});
 }
@@ -222,9 +233,14 @@ app.post('/postquestion', (req, res) => {
 
 
 app.get('/tags', async (req, res) => {
-	let questionList = await Question.find()
-	.populate('tags')
-	.exec();
+	try {
+		let questionList = await Question.find()
+		.populate('tags')
+		.exec();
+	} catch(error) {
+		console.error(error);
+	}
+
 	Tag.find()
 	.exec()
 	.then(tagsList => {
@@ -246,7 +262,7 @@ app.get('/tags', async (req, res) => {
 
 			res.send(tagsListObj);
 	})
-	.catch(err => console.log('Error:', err));
+	.catch(err => console.error(err));
 });
 
 
@@ -288,6 +304,32 @@ app.post(`/postanswer`, (req, res) => {
 	})
 	.catch(err => console.error(err));
 	})
+});
+
+app.get('/account/:email', (req, res) => {
+	Account.findOne({email: req.params.email})
+	.then(account => {
+		if(account) {
+			res.send(true);
+		} else {
+			res.send(false);
+		}
+	})
+	.catch(err => console.error(err));
+});
+
+app.post('/postaccount', async (req, res) => {
+	const salt = await bcrypt.genSalt(10);
+	const passwordHash = await bcrypt.hash(req.body.password, salt);
+	const newAcc = Account({
+		username: req.body.username,
+		email: req.body.email,
+		passwordHash: passwordHash
+	});
+
+	newAcc.save()
+	.then(acc => res.send("Account created"))
+	.catch(err => console.error(err));
 });
 
 app.listen(port, () => {

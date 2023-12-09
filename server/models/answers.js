@@ -8,6 +8,9 @@ var AnswerSchema = new Schema(
         text: {type: String, required: true},
         ans_by: {type: String, required: true},
         ans_date_time: {type: Date, default: Date.now},
+		comments: {type: [{type: Schema.Types.ObjectId, ref: "Comment"}], default: []},
+		upvote: {type: Number, default: 0},
+		downvote: {type: Number, default: 0}
     }
     );
 
