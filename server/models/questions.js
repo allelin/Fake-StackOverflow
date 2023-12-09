@@ -14,8 +14,7 @@ var QuestionSchema = new Schema(
         ask_date_time: {type: Date, default: Date.now},
         views: {type: Number, default: 0},
 		comments: {type: [{type: Schema.Types.ObjectId, ref: "Comment"}], default: []},
-		upvote: {type: Number, default: 0},
-		downvote: {type: Number, default: 0}
+		votes: {type: Number, default: 0},
     }
     );
 

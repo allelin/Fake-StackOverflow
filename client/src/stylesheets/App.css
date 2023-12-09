@@ -530,3 +530,7 @@ button, #post_question_button, #post_answer_button{
 	padding: 5px;
 	margin-bottom: 10px;
 }
+
+#question_summary {
+	padding-left: 25px;
+}

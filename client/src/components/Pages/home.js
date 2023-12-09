@@ -160,6 +160,7 @@ function QuestionComponent(props) {
 		<div className="questionDiv">
 			{/* Add upvote and downvote */}
 			<div className="questionStats">
+				<p>{question.votes + ' votes'} </p>
 				<p>{question.answers.length + ' answers'}</p>
 				<p>{question.views + ' views'}</p>
 			</div>
@@ -168,7 +169,7 @@ function QuestionComponent(props) {
 					onClick={() => props.handleAnswer(question)}
 				>{question.title}</div>
 				{/* add summary */}
-				
+				<p id="question_summary">{question.summary}</p>
 				<div className="tags">
 					{tagsHTML}
 				</div>
