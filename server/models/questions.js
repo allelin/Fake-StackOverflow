@@ -5,13 +5,17 @@ var Schema = mongoose.Schema;
 
 var QuestionSchema = new Schema(
     {
-        title: {type: String, required: true, maxlength: 100},
+        title: {type: String, required: true, maxlength: 50},
+		summary: {type: String, required: true, maxlength: 140},
         text: {type: String, required: true},
-        tags: [{type: Schema.Types.ObjectId, ref: 'Tag', required: true}],
-        answers: [{type: Schema.Types.ObjectId, ref: 'Answer'}],
+        tags: {type: [{type: Schema.Types.ObjectId, ref: 'Tag', required: true}], default: []},
+        answers: {type: [{type: Schema.Types.ObjectId, ref: 'Answer'}], default: []},
         asked_by: {type: String, maxlength: 100, default: 'Anonymous'},
         ask_date_time: {type: Date, default: Date.now},
         views: {type: Number, default: 0},
+		comments: {type: [{type: Schema.Types.ObjectId, ref: "Comment"}], default: []},
+		upvote: {type: Number, default: 0},
+		downvote: {type: Number, default: 0}
     }
     );
 
