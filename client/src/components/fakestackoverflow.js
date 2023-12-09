@@ -71,6 +71,7 @@ export default function FakeStackOverflow() {
 			break;
 		case "login":
 			pageClass = <Login 
+			handlePageSwap={handlePageSwap}
 			/>
 			break;
 		default:

@@ -333,6 +333,29 @@ app.post('/postaccount', async (req, res) => {
 	.catch(err => console.error(err));
 });
 
+app.get('/login/:email/:password', (req, res) => {
+	Account.findOne({email: req.params.email})
+	.then(account => {
+		if(account) {
+			bcrypt.compare(req.params.password, account.passwordHash)
+			.then(result => {
+				if(result) {
+					req.session.user = account.username;
+					req.session.acctype = account.acctype;
+					res.send(account);
+				} else {
+					res.send(false);
+				}
+			})
+			.catch(err => console.error(err));
+		} else {
+			res.send(false);
+		}
+	})
+	.catch(err => console.error(err));
+}
+);
+
 app.listen(port, () => {
 	console.log(`Server is listening on port ${port}`);
 });
