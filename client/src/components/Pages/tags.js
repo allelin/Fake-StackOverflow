@@ -6,7 +6,7 @@ export default function Tags(props) {
 	const [rows, setRows] = useState([]);
 
 	useEffect(() => {
-		axios.get('http://localhost:8000/tags')
+		axios.get('http://localhost:8000/tags', { withCredentials: true })
 		.then(res => {
 			const tagsList = res.data;
 

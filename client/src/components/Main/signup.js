@@ -32,7 +32,7 @@ export default function Signup(props) {
 			} else if(!emailRegex.test(email)) {
 				newError.email = "Invalid email form!";
 			} else {
-				const emailExist = (await axios.get(`http://localhost:8000/account/${email}`)).data;
+				const emailExist = (await axios.get(`http://localhost:8000/account/${email}`), { withCredentials: true }).data;
 				if(emailExist) {
 					newError.email = "Email exist already!";
 				}

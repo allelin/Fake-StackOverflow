@@ -11,7 +11,7 @@ export default function Home(props) {
 		}
 
 		try {
-			const respond = await axios.post(`http://localhost:8000/question/updateviews`, qid);
+			const respond = await axios.post(`http://localhost:8000/question/updateviews`, qid, { withCredentials: true });
 			props.handleQuestionChange(respond.data);
 			props.handlePageSwap("answers");
 		} catch (err) {
@@ -158,6 +158,7 @@ function QuestionComponent(props) {
 	});
 	return (
 		<div className="questionDiv">
+			{/* Add upvote and downvote */}
 			<div className="questionStats">
 				<p>{question.answers.length + ' answers'}</p>
 				<p>{question.views + ' views'}</p>
@@ -166,6 +167,8 @@ function QuestionComponent(props) {
 				<div
 					onClick={() => props.handleAnswer(question)}
 				>{question.title}</div>
+				{/* add summary */}
+				
 				<div className="tags">
 					{tagsHTML}
 				</div>

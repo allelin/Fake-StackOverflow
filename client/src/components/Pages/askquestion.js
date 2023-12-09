@@ -7,7 +7,6 @@ export default function AskQuestion(props) {
 		qText: '',
 		qSummary: '',
 		qTags: '',
-		username: '',
 	})
 
 	const handleSubmit = (event) => {
@@ -17,7 +16,6 @@ export default function AskQuestion(props) {
 		const qTitle = formData.get("qTitle").trim();
 		const qText = formData.get("qText").trim();
 		const qSummary = formData.get("qSummary").trim();
-		const username = formData.get("username").trim();
 		const tagArr = formData.get("qTags").trim().split(" ").filter(Boolean).map(tagName => tagName.toLowerCase());
 
 		const newError = {
@@ -25,7 +23,6 @@ export default function AskQuestion(props) {
 			qText: '',
 			qSummary: '',
 			qTags: '',
-			username: '',
 		}
 
 		if(!qTitle) {
@@ -75,9 +72,6 @@ export default function AskQuestion(props) {
 			newError.qTags = "Not all tags are of max length of 10!";
 		}
 
-		if(!username) {
-			newError.username = "Username required!";
-		}
 
 		setError(newError);
 
@@ -87,10 +81,11 @@ export default function AskQuestion(props) {
 				text: qText,
 				summary: qSummary,
 				tags: tagArr,
-				username: username
+				username: props.user.username,
+				email: props.user.email
 			}
 
-			axios.post(`http://localhost:8000/postquestion`, newQuestion)
+			axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true })
 			.then(res => {
 				props.handlePageSwap("home");
 				props.handleSortChange("newest");
@@ -122,11 +117,6 @@ export default function AskQuestion(props) {
 				<input type="text" name="qTags" className="wordbox" placeholder="javascript html dom" 
 				/>
 				{error.qTags && <div className="error-message">{error.qTags}</div>}
-				<h2>Username*</h2>
-				<br />
-				<input type="text" name="username" className="wordbox" placeholder="Nathan Smith" 
-				/>
-				{error.username && <div className="error-message">{error.username}</div>}
 				<div id="bottom">
 					<input id="post_question_button" type="submit" value="Post Question"/>
 					<p style={{color: 'red'}}>* indicates mandatory fields</p>
