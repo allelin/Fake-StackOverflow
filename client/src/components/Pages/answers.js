@@ -15,13 +15,14 @@ export default function Answers(props) {
         const promise = question.answers.map((answerid) => {
             return axios.get(`http://localhost:8000/answer/${answerid}`, { withCredentials: true })
                 .then((res) => {
-                    const answer = res.data;
+					ansList.push(res.data);
+                    // const answer = res.data;
                     
-                    return axios.get(`http://localhost:8000/comments/answer/${answer._id}`, { withCredentials: true })
-                        .then((commentRes) => {
-                            answer.comments = commentRes.data;
-                            ansList.push(res.data);
-                        })
+                    // return axios.get(`http://localhost:8000/comments/answer/${answer._id}`, { withCredentials: true })
+                    //     .then((commentRes) => {
+                    //         answer.comments = commentRes.data;
+                    //         ansList.push(res.data);
+                    //     })
                 })
                 .catch((err) => {
                     console.log(err);
@@ -73,11 +74,11 @@ export default function Answers(props) {
                     </p>
                 </div>
             </div>
-            <div id = "qComments">
+            {/* <div id = "qComments">
                 <button id = "commentButton" 
                 onClick={() => props.handlePageSwap("commentform")}
                 >Add Comment</button>
-            </div>
+            </div> */}
 			<div id="answer-container">
             	{answerHTMLList.slice(sStart, sStart + 5)}
 			</div>

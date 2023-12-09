@@ -12,6 +12,7 @@ let Answer = require('./models/answers');
 let Question = require('./models/questions');
 let Tag = require('./models/tags');
 let Account = require('./models/account');
+let Comment = require('./models/comment');
 
 //connect to MongoDB database
 mongoose.connect("mongodb://127.0.0.1:27017/fake_so", { useNewUrlParser: true, useUnifiedTopology: true });
@@ -284,10 +285,12 @@ app.get('/tags', async (req, res) => {
 
 app.get('/answer/:id', (req, res) => {
 	Answer.findById(req.params.id)
-		.then(answer => {
-			res.send(answer);
-		})
-		.catch(err => console.error(err));
+	.populate('comments')
+	.exec()
+	.then(answer => {
+		res.send(answer);
+	})
+	.catch(err => console.error(err));
 });
 
 app.post(`/question/updateviews`, (req, res) => {
