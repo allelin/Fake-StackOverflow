@@ -13,7 +13,7 @@ export default function Answers(props) {
     useEffect(() => {
         const ansList = [];
         const promise = question.answers.map((answerid) => {
-            return axios.get(`http://localhost:8000/answer/${answerid}`)
+            return axios.get(`http://localhost:8000/answer/${answerid}`, { withCredentials: true })
                 .then((res) => {
                     ansList.push(res.data);
                 })

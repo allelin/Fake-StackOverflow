@@ -46,7 +46,7 @@ export default function AnswerForm(props) {
                 ans_by: username,
                 qid: props.question._id
             };
-            axios.post(`http://localhost:8000/postanswer`, newAnswer)
+            axios.post(`http://localhost:8000/postanswer`, newAnswer, { withCredentials: true })
             .then (res => {
                 // console.log(res.data);
                 props.handleQuestionChange(res.data);

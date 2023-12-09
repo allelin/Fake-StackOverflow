@@ -36,6 +36,7 @@ export default function RightContent(props) {
 			pageClass = <AskQuestion 
 			handlePageSwap={props.handlePageSwap}
 			handleSortChange={props.handleSortChange}
+			user={props.user}
 			/>
 			break;
 		case "tags":
