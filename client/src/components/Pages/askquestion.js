@@ -30,7 +30,7 @@ export default function AskQuestion(props) {
 
 		if(!qTitle) {
 			newError.qTitle = "Question Title required!";
-		} else if(qTitle.length > 100) {
+		} else if(qTitle.length > 50) {
 			newError.qTitle = "Question Title must be less than 100 words!";
 		}
 
@@ -103,7 +103,7 @@ export default function AskQuestion(props) {
 			onSubmit={handleSubmit}
 			>
 				<h2>Question Title*</h2>
-				<p>Limit title to 100 characters or less</p>
+				<p>Limit title to 50 characters or less</p>
 				<input type="text" name="qTitle" className="wordbox" 
 				placeholder="How can I change an element's class with JavaScript?" 
 				/>
