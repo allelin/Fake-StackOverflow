@@ -101,6 +101,7 @@ export default function FakeStackOverflow() {
 				handleSortChange={handleSortChange} 
 				handlePageSwap={handlePageSwap}
 				TopBarLabel={TopBarLabel}
+				setUser={setUser}
 				user={user}
 				setUser={setUser}
 				/>

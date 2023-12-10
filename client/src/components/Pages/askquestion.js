@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import axios from "axios";
 
 export default function AskQuestion(props) {
@@ -7,9 +7,9 @@ export default function AskQuestion(props) {
 		qText: '',
 		qSummary: '',
 		qTags: '',
-	})
+	});
 
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault();
 
 		const formData = new FormData(event.target);
@@ -70,6 +70,14 @@ export default function AskQuestion(props) {
 			newError.qTags = "More than 5 Tags!";
 		} else if(!(tagArr.every(tag => tag.length < 11))) {
 			newError.qTags = "Not all tags are of max length of 10!";
+		} else {
+			let res = await axios.post(`http://localhost:8000/verifytags`, {tags: tagArr}, { withCredentials: true });
+			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`)).data;
+			props.setUser(updatedAccInfo);
+			// console.log(res);
+			if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
+				newError.qTags = "Insufficient reputation to create new tags";
+			}
 		}
 
 
@@ -81,15 +89,36 @@ export default function AskQuestion(props) {
 				text: qText,
 				summary: qSummary,
 				tags: tagArr,
-				username: props.user.username,
-				email: props.user.email
+				// username: props.user.username,
+				// email: props.user.email
 			}
 
-			axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true })
-			.then(res => {
+			// axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true })
+			// .then(res => {
+			// 	props.handlePageSwap("home");
+			// 	props.handleSortChange("newest");
+			// })
+			// .catch(err => {
+			// 	// console.log(error.response.status);
+			// 	if(err.response.status === 403) {
+			// 		newError.qTags = err.response.data;
+			// 		// console.log(error.response.data);
+			// 		setError(newError);
+			// 		console.log(error);
+			// 	}
+			// })
+
+			try {
+				const res = await axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true });
 				props.handlePageSwap("home");
 				props.handleSortChange("newest");
-			})
+			} catch (err) {
+				// if (err.response && err.response.status === 403) {
+				// 	newError.qTags = err.response.data;
+				// 	setError(newError);
+				console.log(error);
+				// }
+			}
 		}
 	}
 	return (

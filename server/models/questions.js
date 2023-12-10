@@ -15,6 +15,7 @@ var QuestionSchema = new Schema(
         views: {type: Number, default: 0},
 		comments: {type: [{type: Schema.Types.ObjectId, ref: "Comment"}], default: []},
 		votes: {type: Number, default: 0},
+		voted_by: {type: [{type: Schema.Types.ObjectId, ref: "Account"}], default: []}
     }
     );
 

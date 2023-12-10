@@ -10,6 +10,7 @@ var AnswerSchema = new Schema(
         ans_date_time: {type: Date, default: Date.now},
 		comments: {type: [{type: Schema.Types.ObjectId, ref: "Comment"}], default: []},
 		votes: {type: Number, default: 0},
+		voted_by: {type: [{type: Schema.Types.ObjectId, ref: "Account"}], default: []}
     }
     );
 
