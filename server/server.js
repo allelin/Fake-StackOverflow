@@ -366,7 +366,7 @@ app.get('/login/:email/:password', (req, res) => {
 							req.session.user = account.username;
 							req.session.acctype = account.accType;
 							req.session.email = account.email;
-							// console.log(req.session);
+							// console.log(req.session); 
 							res.send(account);
 						} else {
 							res.send(false);
@@ -409,6 +409,21 @@ app.get(`/logout`, (req, res) => {
 		}
 	});
 	// }
+});
+
+app.get(`/accountinfo`, (req, res) => {
+	Account.findOne({ email: req.session.email })
+		.populate("questions")
+		.populate("answers")
+		.populate("tags")
+		.exec()
+		.then(account => {
+			if (account) {
+				res.send(account);
+			} else {
+				res.send(false);
+			}
+		})
 });
 
 app.listen(port, () => {
