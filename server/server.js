@@ -13,6 +13,7 @@ let Question = require('./models/questions');
 let Tag = require('./models/tags');
 let Account = require('./models/account');
 let Comment = require('./models/comment');
+const questions = require('./models/questions');
 
 //connect to MongoDB database
 mongoose.connect("mongodb://127.0.0.1:27017/fake_so", { useNewUrlParser: true, useUnifiedTopology: true });
@@ -353,6 +354,10 @@ app.post('/postaccount', async (req, res) => {
 
 app.get('/login/:email/:password', (req, res) => {
 	Account.findOne({ email: req.params.email })
+	.populate("questions")
+	.populate("answers")
+	.populate("tags")
+	.exec()
 		.then(account => {
 			if (account) {
 				bcrypt.compare(req.params.password, account.passwordHash)
@@ -361,7 +366,7 @@ app.get('/login/:email/:password', (req, res) => {
 							// console.log("hi");
 							req.session.user = account.username;
 							req.session.acctype = account.accType;
-							req.session.email = account.email;
+	.populate
 							// console.log(req.session);
 							res.send(account);
 						} else {
