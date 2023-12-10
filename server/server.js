@@ -353,6 +353,10 @@ app.post('/postaccount', async (req, res) => {
 
 app.get('/login/:email/:password', (req, res) => {
 	Account.findOne({ email: req.params.email })
+	.populate("questions")
+	.populate("answers")
+	.populate("tags")
+	.exec()
 		.then(account => {
 			if (account) {
 				bcrypt.compare(req.params.password, account.passwordHash)
