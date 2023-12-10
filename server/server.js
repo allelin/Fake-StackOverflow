@@ -501,7 +501,7 @@ app.get(`/logout`, (req, res) => {
 app.post("/postcomment/question", (req, res) => {
 	const newComment = Comment({
 		text: req.body.text,
-		commented_by: req.session.user,
+		comment_by: req.session.user,
 	});
 	newComment.save()
 	.then(newCom => {
@@ -515,7 +515,10 @@ app.post("/postcomment/question", (req, res) => {
 					question.comments.push(newCom);
 					question.save()
 					.then(question => {
-						res.send(question);
+						return Question.findById(question._id).populate('tags').populate('comments').exec();
+					})
+					.then(populatedQ => {
+						res.send(populatedQ);
 					})
 				})
 			})
@@ -525,17 +528,14 @@ app.post("/postcomment/question", (req, res) => {
 });
 
 app.get(`/accountinfo`, (req, res) => {
+	// console.log(req.session);
 	Account.findOne({ email: req.session.email })
 		.populate("questions")
 		.populate("answers")
 		.populate("tags")
 		.exec()
 		.then(account => {
-			if (account) {
-				res.send(account);
-			} else {
-				res.send(false);
-			}
+			res.send(account);
 		})
 });
 

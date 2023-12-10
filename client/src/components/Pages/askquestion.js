@@ -72,12 +72,12 @@ export default function AskQuestion(props) {
 			newError.qTags = "Not all tags are of max length of 10!";
 		} else {
 			let res = await axios.post(`http://localhost:8000/verifytags`, {tags: tagArr}, { withCredentials: true });
-			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`)).data;
+			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })).data;
 			props.setUser(updatedAccInfo);
 			// console.log(res);
-			if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
-				newError.qTags = "Insufficient reputation to create new tags";
-			}
+			// if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
+			// 	newError.qTags = "Insufficient reputation to create new tags";
+			// }
 		}
 
 

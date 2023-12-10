@@ -5,7 +5,7 @@ import axios from 'axios';
 export default function Profile(props) {
     const date = new Date(props.user.acc_date_created);
     const formattedDate = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    console.log(props.user);
+    // console.log(props.user)	;
 
     useEffect(() => {
         axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })
@@ -14,6 +14,8 @@ export default function Profile(props) {
                 props.setUser(userData);
             });
     }, []);
+	// console.log(props.user);
+
     return (
         <div className="profile-page">
             <h1>Profile Page</h1>
@@ -27,8 +29,9 @@ export default function Profile(props) {
                 <div className="profile-questions">
                     <h2>My Questions</h2>
                     <ul>
-                        {props.user.questions.slice().reverse().map((question) => {
-                            return (<li key={question._id}>
+                        {/* {props.user.questions.slice().reverse().map((question) => { */}
+						{props.user.questions.map((question) => {
+                            return <li key={question._id}>
                                 <p>{question.title}</p>
                                 <div>
                                     <div
@@ -38,7 +41,7 @@ export default function Profile(props) {
                                     // onClick={() => props.handleQuestionDelete(question._id)}
                                     >Delete</div>
                                 </div>
-                            </li>)
+                            </li>
                         })}
                     </ul>
                 </div>
@@ -54,7 +57,7 @@ export default function Profile(props) {
                     <h2>My Tags</h2>
                     <ul>
                         {props.user.tags.map((tag) => {
-                            return <li key={tag._id}>{tag}</li>
+                            return <li key={tag._id}>{tag.name}</li>
                         })}
                     </ul>
                 </div>
