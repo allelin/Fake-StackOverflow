@@ -62,6 +62,7 @@ export default function RightContent(props) {
 		case "profile":
 			pageClass = <Profile
 			user={props.user}
+			setUser={props.setUser}
 			/>
 			break;
 		default:

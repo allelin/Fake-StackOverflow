@@ -102,6 +102,7 @@ export default function FakeStackOverflow() {
 				handlePageSwap={handlePageSwap}
 				TopBarLabel={TopBarLabel}
 				user={user}
+				setUser={setUser}
 				/>
 			</div>
 		</div>;

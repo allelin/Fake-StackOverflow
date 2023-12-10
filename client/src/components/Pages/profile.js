@@ -1,10 +1,19 @@
 
-import React from 'react';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 export default function Profile(props) {
     const date = new Date(props.user.acc_date_created);
-    const formattedDate = date.toLocaleString();
+    const formattedDate = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     console.log(props.user);
+
+    useEffect(() => {
+        axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })
+            .then(res => {
+                const userData = res.data;
+                props.setUser(userData);
+            });
+    }, []);
     return (
         <div className="profile-page">
             <h1>Profile Page</h1>
@@ -18,8 +27,18 @@ export default function Profile(props) {
                 <div className="profile-questions">
                     <h2>My Questions</h2>
                     <ul>
-                        {props.user.questions.map((question) => {
-                            return <li key={question._id}>{question.title}</li>
+                        {props.user.questions.slice().reverse().map((question) => {
+                            return (<li key={question._id}>
+                                <p>{question.title}</p>
+                                <div>
+                                    <div
+                                    // onClick={() => props.handleQuestionChange()}
+                                    >Edit</div>
+                                    <div
+                                    // onClick={() => props.handleQuestionDelete(question._id)}
+                                    >Delete</div>
+                                </div>
+                            </li>)
                         })}
                     </ul>
                 </div>
@@ -31,8 +50,17 @@ export default function Profile(props) {
                         })}
                     </ul>
                 </div>
+                <div className="profile-tags">
+                    <h2>My Tags</h2>
+                    <ul>
+                        {props.user.tags.map((tag) => {
+                            return <li key={tag._id}>{tag}</li>
+                        })}
+                    </ul>
+                </div>
             </div>
         </div>
-    );
+    )
 }
+
 
