@@ -18,10 +18,21 @@ body {
 }
 
 #empty_space {
-	width: 300px;
 	height: 100%;
+	font-size: 25px;
+	font-weight: bold;
+	text-align: center;
 	margin: auto;
-	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex: .5;
+	background-color: #cac5c1;
+}
+
+#empty_space:hover {
+	background-color: #666262;
+	cursor: pointer;
 }
 
 #title {
@@ -56,17 +67,17 @@ body {
 }
 
 .nav_main {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 	height: 100%;
 }
 
 .nav_main div {
 	padding: 20px;
-    margin: 0px;
-    text-align: center;
+	margin: 0px;
+	text-align: center;
 	font-size: 25px;
-	color:blue;
+	color: blue;
 	cursor: pointer;
 }
 
@@ -100,13 +111,14 @@ body {
 	/* overflow-y: auto hidden; */
 }
 
-#topbar{
+#topbar {
 	display: flex;
 	padding: 20px 50px 0px;
 	align-items: baseline;
 	justify-content: space-between;
 	white-space: nowrap;
 }
+
 
 button, #post_question_button, #post_answer_button, .comment_button{
 	max-width: 150px;
@@ -188,7 +200,7 @@ button, #post_question_button, #post_answer_button, .comment_button{
 .questionTitle div {
 	padding: 30px 20px 0px;
 	margin: 0px;
-	color:darkcyan;
+	color: darkcyan;
 	font-size: 30px;
 }
 
@@ -227,7 +239,7 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	margin: 30px 0px 0px;
 	font-size: 30px;
 	padding-left: 10px;
-	
+
 }
 
 #newQuestionForm p {
@@ -236,13 +248,13 @@ button, #post_question_button, #post_answer_button, .comment_button{
 }
 
 .wordbox {
-	width:100%;
+	width: 100%;
 	font-size: 15px;
 	padding: 20px 6px;
 }
 
 .wordarea {
-	width:100%;
+	width: 100%;
 	height: 250px;
 	font-size: 15px;
 	padding: 20px 6px;
@@ -251,14 +263,14 @@ button, #post_question_button, #post_answer_button, .comment_button{
 }
 
 .error-message {
-	color:red;
+	color: red;
 	margin: 5px 0px 5px 0px;
 	background-color: yellow;
 	width: fit-content;
 }
 
 #bottom {
-	display:flex;
+	display: flex;
 	justify-content: space-between;
 	margin: 30px 0px 0px;
 }
@@ -322,7 +334,7 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	flex: 6;
 }
 
-#qSecondBar{
+#qSecondBar {
 	display: flex;
 	justify-content: space-between;
 	padding: 0 20px;
@@ -426,16 +438,16 @@ button, #post_question_button, #post_answer_button, .comment_button{
 
 .welcome-container h1 {
 	font-size: 50px;
-}	
+}
 
 .welcome-buttons {
 	color: black;
 	display: flex;
 	flex-direction: column;
-	margin : 10px;
+	margin: 10px;
 	padding: 10px;
 	border-radius: 10px;
-	
+
 }
 
 .welcome-login {
@@ -467,7 +479,9 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	max-width: 200px;
 }
 
-.welcome-login:hover, .welcome-signup:hover, .welcome-guest:hover {
+.welcome-login:hover,
+.welcome-signup:hover,
+.welcome-guest:hover {
 	background-color: #b1aeae;
 	cursor: pointer;
 }
@@ -507,10 +521,12 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	font-size: 40px;
 	padding: 8px;
 }
+
 #signup-submit {
 	font-size: 20px;
 	margin: 10px;
-	min-width: none;;
+	min-width: none;
+	;
 	background-color: rgb(245, 134, 43);
 	color: black;
 	font-weight: bold;
@@ -553,10 +569,12 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	font-size: 40px;
 	padding: 8px;
 }
+
 #login-submit {
 	font-size: 20px;
 	margin: 10px;
-	min-width: none;;
+	min-width: none;
+	;
 	background-color: rgb(245, 134, 43);
 	color: black;
 	font-weight: bold;
@@ -578,6 +596,7 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	padding-left: 25px;
 }
 
+
 .commentForm {
 	margin: 0 200px;
 	display: flex;
@@ -591,4 +610,54 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	overflow-y: auto;
 	resize: none;
 	margin: 0 10px;
+
+.profile-page {
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.profile-inner {
+	display: flex;
+	justify-content: space-between;
+}
+
+.profile-questions li div {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 10px;
+}
+
+.profile-questions li,
+.profile-answers li,
+.profile-tags li {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+
+.profile-questions ul,
+.profile-answers ul,
+.profile-tags ul {
+	list-style: none;
+	padding: 0;
+}
+
+.profile-stats {
+	background-color: #f4f4f4;
+	padding: 20px;
+	border-radius: 8px;
+	min-width: 200px;
+}
+
+
+.profile-questions,
+.profile-answers,
+.profile-tags {
+	flex: 1;
+	margin: 0 10px;
+	background-color: #f4f4f4;
+	padding: 20px;
+	border-radius: 8px;
+	min-width: 500px;
 }
