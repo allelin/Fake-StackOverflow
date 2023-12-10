@@ -5,6 +5,7 @@ export default function Answers(props) {
     const [answerHTMLList, setAnswerHTMLList] = useState([]);
     const question = props.question;
 	const [sStart, setSStart] = useState(0);
+	const [cStart, setCStart] = useState(0);
 	const [tagsHTML, setTagsHTML] = useState([]);
 	const [commentHTML, setCommentHTML] = useState([]);
 	const [error, setError] = useState({
@@ -13,6 +14,10 @@ export default function Answers(props) {
 
 	const changeSStart = (num) => {
 		setSStart(sStart + num);
+	}
+
+	const changeCStart = (num) => {
+		setCStart(cStart + num);
 	}
 
 	const handleCommentSubmit = async (event, type, qid, aid) => {
@@ -30,12 +35,13 @@ export default function Answers(props) {
 		} else if(cText.length > 140) {
 			newError.cText = "More than 140 characters!";
 		} else {
-			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`)).data;
+			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })).data;
 			props.setUser(updatedAccInfo);
+			// console.log(updatedAccInfo);
 
-			if(updatedAccInfo.reputation < 50) {
-				newError.cText = "Insufficient reputation to make comment!";
-			}
+			// if(updatedAccInfo.reputation < 50) {
+			// 	newError.cText = "Insufficient reputation to make comment!";
+			// }
 		}
 
 		setError(newError);
@@ -44,7 +50,9 @@ export default function Answers(props) {
 			if(type === "question") {
 				axios.post(`http://localhost:8000/postcomment/${type}/`, {qid: qid, text: cText}, { withCredentials: true })
 				.then(res => {
+					// console.log(res.data);
 					props.handleQuestionChange(res.data);
+					event.target.elements.commentText.value = '';
 				})
 				.catch(err => {
 					console.log(err);
@@ -53,6 +61,7 @@ export default function Answers(props) {
 				axios.post(`http://localhost:8000/postcomment/${type}/`, {qid: qid, aid: aid, text: cText}, { withCredentials: true })
 				.then(res => {
 					props.handleQuestionChange(res.data);
+					event.target.elements.commentText.value = '';
 				})
 				.catch(err => {
 					console.log(err);
@@ -61,6 +70,8 @@ export default function Answers(props) {
 			
 		}
 	}
+
+	// console.log(props.user);
 
     useEffect(() => {
         const ansList = [];
@@ -106,6 +117,7 @@ export default function Answers(props) {
 				<CommentComponent
 					key={comment._id}
 					comment={comment}
+					user={props.user}
 				/>
 			);
 		});
@@ -168,11 +180,22 @@ export default function Answers(props) {
 				</div>
 			</div>
 			<div className="commentbox">
+            	{commentHTML.slice(cStart, cStart + 3)}
+			</div>
+			{props.user ? <div className="commentbox">
 				<form className="commentForm" onSubmit={(event) => handleCommentSubmit(event, "question", question._id)}>
 					<textarea name="commentText" className="commentTextArea" placeholder='Add a comment with no more than 140 characters'></textarea>
 					{error.cText && <div className="error-message">{error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
 				</form>
+			</div> : <></>}
+			<div className="navigateElements">
+				{cStart > 0 ? <button type="button"
+				onClick={() => changeCStart(-3)}
+				>Prev</button> : <></>}
+				{cStart < (commentHTML.length - 3) ? <button type="button" 
+				onClick={() => changeCStart(3)}
+				>Next</button> : <></>}
 			</div>
 			<div id="answer-container">
             	{answerHTMLList.slice(sStart, sStart + 5)}

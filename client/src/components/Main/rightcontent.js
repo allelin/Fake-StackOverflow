@@ -52,6 +52,7 @@ export default function RightContent(props) {
 			handlePageSwap={props.handlePageSwap}
 			question={question}
 			user={props.user}
+			setUser={props.setUser}
 			handleQuestionChange={handleQuestionChange}
 			/>;
 			break;
