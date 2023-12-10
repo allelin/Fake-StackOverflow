@@ -38,6 +38,7 @@ export default function RightContent(props) {
 			handlePageSwap={props.handlePageSwap}
 			handleSortChange={props.handleSortChange}
 			user={props.user}
+			setUser={props.setUser}
 			/>
 			break;
 		case "tags":
@@ -50,6 +51,8 @@ export default function RightContent(props) {
 			pageClass = <Answers
 			handlePageSwap={props.handlePageSwap}
 			question={question}
+			user={props.user}
+			handleQuestionChange={handleQuestionChange}
 			/>;
 			break;
 		case "answerform":
@@ -57,6 +60,7 @@ export default function RightContent(props) {
 			question={question}
 			handlePageSwap={props.handlePageSwap}
 			handleQuestionChange={handleQuestionChange}
+			user={props.user}
 			/>;
 			break;
 		case "profile":

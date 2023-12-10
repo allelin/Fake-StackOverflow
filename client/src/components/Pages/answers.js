@@ -5,9 +5,61 @@ export default function Answers(props) {
     const [answerHTMLList, setAnswerHTMLList] = useState([]);
     const question = props.question;
 	const [sStart, setSStart] = useState(0);
+	const [tagsHTML, setTagsHTML] = useState([]);
+	const [commentHTML, setCommentHTML] = useState([]);
+	const [error, setError] = useState({
+		cText: '',
+	});
 
 	const changeSStart = (num) => {
 		setSStart(sStart + num);
+	}
+
+	const handleCommentSubmit = async (event, type, qid, aid) => {
+		event.preventDefault();
+
+		const formData = new FormData(event.target);
+		const cText = formData.get("commentText");
+
+		const newError = {
+			cText: '',
+		}
+
+		if(!cText) {
+			newError.cText = "Do not leave comment box empty!";
+		} else if(cText.length > 140) {
+			newError.cText = "More than 140 characters!";
+		} else {
+			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`)).data;
+			props.setUser(updatedAccInfo);
+
+			if(updatedAccInfo.reputation < 50) {
+				newError.cText = "Insufficient reputation to make comment!";
+			}
+		}
+
+		setError(newError);
+
+		if(Object.values(newError).every(field => field === '')) {
+			if(type === "question") {
+				axios.post(`http://localhost:8000/postcomment/${type}/`, {qid: qid, text: cText}, { withCredentials: true })
+				.then(res => {
+					props.handleQuestionChange(res.data);
+				})
+				.catch(err => {
+					console.log(err);
+				})
+			} else if(type === "answer") {
+				axios.post(`http://localhost:8000/postcomment/${type}/`, {qid: qid, aid: aid, text: cText}, { withCredentials: true })
+				.then(res => {
+					props.handleQuestionChange(res.data);
+				})
+				.catch(err => {
+					console.log(err);
+				})
+			}
+			
+		}
 	}
 
     useEffect(() => {
@@ -35,6 +87,29 @@ export default function Answers(props) {
             });
             setAnswerHTMLList(ansHTMLList);
         });
+
+		const newTagsHTML = []
+		// console.log(question.tags);
+		question.tags.forEach((tag) => {
+			newTagsHTML.push(
+				<TagComponent
+					tag={tag}
+					key={tag._id}
+				/>);
+		});
+		// console.log(newTagsHTML);
+		setTagsHTML(newTagsHTML);
+
+		const newCommentHTML = [];
+		question.comments.forEach(comment => {
+			newCommentHTML.push(
+				<CommentComponent
+					key={comment._id}
+					comment={comment}
+				/>
+			);
+		});
+		setCommentHTML(newCommentHTML);
     }, [question.answers]);
 
     useEffect(() => {
@@ -53,14 +128,16 @@ export default function Answers(props) {
 
     const textHTML = displayLinkInText(question.text)
 
+	// console.log(question);
+
     return (
         <div id="right_bar">
             <div id="qtopbar">
                 <h2 id="ansNum">{question.answers.length + " answers"}</h2>
                 <h2 id="qLabel">{question.title}</h2>
-                <button type="button" id="askbutton"
+                {props.user ? <button type="button" id="askbutton"
                 onClick={() => props.handlePageSwap("askquestion")}
-                >Ask Question</button>
+                >Ask Question</button> : <></>}
             </div>
             <div id="qSecondBar">
                 <h2>{question.views + " views"}</h2>
@@ -74,17 +151,35 @@ export default function Answers(props) {
                     </p>
                 </div>
             </div>
-            {/* <div id = "qComments">
-                <button id = "commentButton" 
-                onClick={() => props.handlePageSwap("commentform")}
-                >Add Comment</button>
-            </div> */}
+			<div id="qThirdBar">
+				{props.user ? <div className="vote_buttons">
+					<button type="button"
+					id="upvote_button"
+					// onClick={}
+					>Upvote</button>
+					<button type="button"
+					id="downvote_button"
+					// onClick={}
+					>Downvote</button>
+				</div> : <></>}
+				<h2>{question.votes + " votes"}</h2>
+				<div className="tags">
+					{tagsHTML}
+				</div>
+			</div>
+			<div className="commentbox">
+				<form className="commentForm" onSubmit={(event) => handleCommentSubmit(event, "question", question._id)}>
+					<textarea name="commentText" className="commentTextArea" placeholder='Add a comment with no more than 140 characters'></textarea>
+					{error.cText && <div className="error-message">{error.cText}</div>}
+					<input className="comment_button" type="submit" value="Post Comment"/>
+				</form>
+			</div>
 			<div id="answer-container">
             	{answerHTMLList.slice(sStart, sStart + 5)}
 			</div>
-            <button id="answerButton"
+            {props.user ? <button id="answerButton"
             onClick={() => props.handlePageSwap("answerform")}
-            >Answer Question</button>
+            >Answer Question</button> : <></>}
 			<div className="navigateElements">
 				{sStart > 0 ? <button type="button"
 				onClick={() => changeSStart(-5)}
@@ -113,6 +208,37 @@ function AnsComponent(props) {
             </div>
         </div>
     );
+}
+
+function TagComponent(props) {
+	const tag = props.tag;
+
+	return (
+		<p className="tags">{tag.name}</p>
+	);
+}
+
+function CommentComponent(props) {
+	const comment = props.comment;
+
+	return (
+		<div className="comment">
+			{props.user ? <div className="vote_buttons">
+					<button type="button"
+					id="upvote_button"
+					// onClick={}
+					>Upvote</button>
+			</div> : <></>}
+			<h3>{comment.votes + " votes"}</h3>
+			<p>{comment.text}</p>
+			<div className="comAuthor">
+                <p>
+                    <span style={{ color: 'blueviolet' }}>{comment.comment_by}</span>
+                    {" commented by " + getTimeDisplay(new Date(comment.comment_date_time), new Date())}
+                </p>
+            </div>
+		</div>
+	);
 }
 
 function displayLinkInText(text) {

@@ -195,6 +195,31 @@ function getQuestionsByWord(word, questions) {
 		}));
 }
 
+app.post('/verifytags', (req, res) => {
+	let tags = [];
+	// console.log(req.body.tags);
+	const promises = req.body.tags.map(tagName => {
+		return Tag.findOne({ name: tagName})
+		.then(tag => {
+			if(tag) {
+				tags.push(tag);
+			}
+			return tag;
+		})
+		.catch(err => {
+			console.error(err);
+		})
+	});
+
+	Promise.all(promises)
+	.then(() => {
+		res.send(tags);
+	}).catch(err => {
+		console.error(err);
+		// res.status(500).send('Internal Server Error');
+	});
+});
+
 //middleware get all tags
 const getTags = function (req, res, next) {
 	const tagsArr = req.body.tags;
@@ -207,10 +232,32 @@ const getTags = function (req, res, next) {
 				} else {
 					let newTag = new Tag({ name: tagName });
 					return newTag.save()
+					.then(newTag => {
+						return Account.findOne({ email: req.session.email })
+						.then(account => {
+							account.tags.push(newTag);
+							return account.save();
+						});
+					});
+					// return Account.findOne({ email: req.body.email })
+					// .then(account => {
+					// 	if(account.reputation >= 50) {
+					// 		let newTag = new Tag({ name: tagName });
+					// 		return newTag.save()
+					// 		.then(newTag => {
+					// 			account.tags.push(newTag);
+					// 			return account.save();
+					// 		})
+					// 	} else {
+					// 		// res.status(403).send("Insufficient reputation to create a new tag.");
+					// 		return Promise.reject(new Error("Insufficient reputation to create a new tag."));
+					// 	}
+					// });
 				}
 			})
 			.catch(err => {
 				console.error(err);
+				return Promise.reject(new Error("An error occurred while processing tags."));
 			});
 	});
 
@@ -219,8 +266,28 @@ const getTags = function (req, res, next) {
 			req.body.tags = tags;
 			next();
 		})
+		// .then(results => {
+		// 	// Check if any promises were rejected
+		// 	// const errors = results.filter(result => result.status === 'rejected');
+		// 	console.log(results);
+	  
+		// 	// if (errors.length > 0) {
+		// 	//   // If there are errors, prevent the creation of a new question
+		// 	//   res.status(403).send("Question creation failed. Insufficient reputation to create a new tag.");
+		// 	//   req.body.tagsProcessed = false;
+		// 	// } else {
+		// 	  // If no errors, continue processing and pass tags to the next middleware or route
+		// 	const tags = results.map(result => result.value);
+		// 	req.body.tags = tags;
+		// 	req.body.tagsProcessed = true;
+		// 	  next();
+		// 	// }
+		//   })
 		.catch(err => {
 			console.error(err);
+			// console.log("hi");
+			// req.body.tagsProcessed = false;
+			// res.status(403).send("Question creation failed. Insufficient reputation to create a new tag.");
 			next();
 		});
 }
@@ -229,17 +296,18 @@ app.use('/postquestion', getTags);
 
 app.post('/postquestion', (req, res) => {
 	// console.log(req.body);
+	// if(req.body.tagsProcessed) {
 	let newQuestion = Question({
 		title: req.body.title,
 		summary: req.body.summary,
 		text: req.body.text,
 		tags: req.body.tags,
-		asked_by: req.body.username,
+		asked_by: req.session.user,
 	});
 
 	newQuestion.save()
 		.then(newQ => {
-			Account.findOne({ email: req.body.email })
+			Account.findOne({ email: req.session.email })
 				.then(account => {
 					account.questions.push(newQ);
 					account.save()
@@ -249,6 +317,7 @@ app.post('/postquestion', (req, res) => {
 						.catch(err => console.error(err));
 				});
 		});
+	// }
 });
 
 
@@ -295,33 +364,50 @@ app.get('/answer/:id', (req, res) => {
 
 app.post(`/question/updateviews`, (req, res) => {
 	Question.findById(req.body.id)
+	.populate("tags")
+	.exec()
 		.then(question => {
 			question.views += 1;
 			question.save()
 				.then((question) => {
-					res.send(question);
+					// res.send(question);
+					return Question.findById(question._id).populate('tags').populate('comments').exec();
+				})
+				.then(populatedQ => {
+					res.send(populatedQ);
 				})
 				.catch(err => console.error(err));
 		})
 });
 
 app.post(`/postanswer`, (req, res) => {
+	// console.log(req.session);
 	const newAnswer = Answer({
 		text: req.body.text,
-		ans_by: req.body.ans_by,
+		ans_by: req.session.user,
 	});
 	newAnswer.save()
 		.then((newAns) => {
-			Question.findById(req.body.qid)
-				.then(question => {
-					question.answers.push(newAns._id);
-					question.save()
-						.then((question) => {
-							res.send(question);
-						})
-						.catch(err => console.error(err));
+			Account.findOne({ email: req.session.email })
+			.then(account => {
+				account.answers.push(newAns);
+				account.save()
+				.then(account => {
+					Question.findById(req.body.qid)
+					.then(question => {
+						question.answers.push(newAns._id);
+						question.save()
+							.then((question) => {
+								return Question.findById(question._id).populate('tags').populate('comments').exec();
+							})
+							.then(populatedQ => {
+								res.send(populatedQ);
+							})
+							.catch(err => console.error(err));
+					})
+					.catch(err => console.error(err));
 				})
-				.catch(err => console.error(err));
+			});
 		})
 });
 
@@ -405,6 +491,33 @@ app.get(`/logout`, (req, res) => {
 		}
 	});
 	// }
+});
+
+app.post("/postcomment/question", (req, res) => {
+	const newComment = Comment({
+		text: req.body.text,
+		commented_by: req.session.user,
+	});
+	newComment.save()
+	.then(newCom => {
+		Account.findOne({ email: req.session.email })
+		.then(account => {
+			account.comments.push(newCom);
+			account.save()
+			.then(account => {
+				Question.findById(req.body.qid)
+				.then(question => {
+					question.comments.push(newCom);
+					question.save()
+					.then(question => {
+						res.send(question);
+					})
+				})
+			})
+		})
+	})
+	.catch(err => console.error(err));
+	
 });
 
 app.listen(port, () => {

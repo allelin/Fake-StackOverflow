@@ -7,6 +7,10 @@ export default function LeftNav(props) {
 		props.handlePageSwap("welcome");
 	}
 
+	const handleSignInUp = () => {
+		props.handlePageSwap("welcome");
+	}
+
     return (
 		<div className="left_bar">
 			<nav className="nav_main">
@@ -22,7 +26,9 @@ export default function LeftNav(props) {
 				</div>
 				{props.user ? <button type="button" id="logout_button"
 				onClick={handleLogout}
-				>Logout</button> : <></>}
+				>Logout</button> : <button type="button" id="signinup_button"
+				onClick={handleSignInUp}
+				>Sign in/Sign up</button>}
 			</nav>
 		</div>
 	);

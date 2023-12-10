@@ -22,9 +22,9 @@ export default function Tags(props) {
 				currentRow.push(tag);
 			});
 
-			while (currentRow.length < 3 && currentRow.length > 0) {
-				currentRow.push(null); 
-			}
+			// while (currentRow.length < 3 && currentRow.length > 0) {
+			// 	currentRow.push(null); 
+			// }
 			
 			if (currentRow.length > 0) {
 				rows.push(currentRow);
@@ -49,7 +49,7 @@ export default function Tags(props) {
 					{rows.map((row, rowIndex) => (
 						<tr key={rowIndex}>
 							{row.map((tag) => (
-								tag ? 
+								// tag ? 
 								<td key={tag.tag._id}>
 									<div className="tagBox">
 										<div className="tagName" onClick={() => {
@@ -66,7 +66,8 @@ export default function Tags(props) {
 										</p>
 									</div>
 								</td>
-							: <td></td>))}
+							// : <td></td>))
+							))}
 						</tr>
 					))}
 				</tbody>

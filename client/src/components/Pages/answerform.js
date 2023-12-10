@@ -4,7 +4,7 @@ import axios from 'axios';
 export default function AnswerForm(props) {
     const [error, setError] = useState({
         aText: "",
-        username: "",
+        // username: "",
     });
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -12,11 +12,11 @@ export default function AnswerForm(props) {
         // let validForm = true;
         const formData = new FormData(event.target);
         const aText = formData.get("aText").trim();
-        const username = formData.get("aUsername").trim();
+        // const username = formData.get("aUsername").trim();
 
         const newError = {
             aText: "",
-            username: "",
+            // username: "",
         };
 
         if (!aText) {
@@ -34,24 +34,28 @@ export default function AnswerForm(props) {
             }
         }
 
-        if (!username) {
-            newError.username = "Username cannot be empty";
-        }
+        // if (!username) {
+        //     newError.username = "Username cannot be empty";
+        // }
 
         setError(newError);
 
-        if (newError.aText === "" && newError.username === "") {
+		// console.log("hi");
+
+        if (newError.aText === "") {
             const newAnswer = {
                 text: aText,
-                ans_by: username,
-                qid: props.question._id
+                // ans_by: props.user.username,
+                qid: props.question._id,
+				// email: props.user,email
             };
+			// console.log("hi");
             axios.post(`http://localhost:8000/postanswer`, newAnswer, { withCredentials: true })
             .then (res => {
                 // console.log(res.data);
                 props.handleQuestionChange(res.data);
                 props.handlePageSwap("answers");
-            })
+            });
         }
 
     }
@@ -61,14 +65,14 @@ export default function AnswerForm(props) {
             <form id="newAnswerForm"
             onSubmit={handleSubmit}
             >
-                <h2>Username*</h2>
+                {/* <h2>Username*</h2>
                 <br></br>
                 <input type="text" name="aUsername" className="wordbox" placeholder="Nathan Smith"
                 // required
                 />
-                {error.username && <div className="error-message">{error.username}</div>}
+                {error.username && <div className="error-message">{error.username}</div>} */}
                 <h2>Answer Text*</h2>
-                <br></br>
+                {/* <br></br> */}
                 <textarea name="aText" className="wordarea" placeholder="You can do this..."
                 // required
                 ></textarea>
