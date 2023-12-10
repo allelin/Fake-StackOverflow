@@ -522,7 +522,7 @@ app.post("/postcomment/question", (req, res) => {
 		})
 	})
 	.catch(err => console.error(err));
-	
+});
 
 app.get(`/accountinfo`, (req, res) => {
 	Account.findOne({ email: req.session.email })

@@ -103,7 +103,6 @@ export default function FakeStackOverflow() {
 				TopBarLabel={TopBarLabel}
 				setUser={setUser}
 				user={user}
-				setUser={setUser}
 				/>
 			</div>
 		</div>;
