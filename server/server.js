@@ -620,6 +620,135 @@ app.get('/deletequestion/:id', async (req, res) => {
 
 });
 
+app.post('/:type/:voteType', async (req, res) => {
+	try {
+		let question;
+		const user = await Account.findOne({ email: req.session.email });
+		// console.log(user);
+		// console.log(req.session);
+		let accData;
+		switch(req.params.type) {
+			case "question":
+				question = await Question.findById(req.body.qid).populate({
+					path: "voted_by.account",
+					model: "Account"
+				  });
+				// console.log(question.voted_by);
+				accData = question.voted_by.find(user => user.account.email == req.session.email);
+				// console.log(accData);
+				switch(req.params.voteType) {
+					case "upvote":
+						// if(!question.voted_by.find(user => user.email == req.session.email)) {
+						if(!accData) {
+							question.votes += 1;
+							question.voted_by.push({account: user, vote: 1});
+							question = await question.save();
+
+							let asked_by = await Account.findOne({ username: question.asked_by });
+							asked_by.reputation += 5;
+							asked_by = await asked_by.save();
+						} else if(accData.vote == -1) {
+							question.votes += 1;
+							question.voted_by.pull(accData._id);
+							question = await question.save();
+
+							let asked_by = await Account.findOne({ username: question.asked_by });
+							asked_by.reputation += 10;
+							asked_by = await asked_by.save();
+						}
+						break;
+					case "downvote":
+						if(!accData) {
+							question.votes -= 1;
+							question.voted_by.push({account: user, vote: -1});
+							question = await question.save();
+
+							let asked_by = await Account.findOne({ username: question.asked_by });
+							asked_by.reputation -= 10;
+							asked_by = await asked_by.save();
+						} else if(accData.vote == 1) {
+							question.votes -= 1;
+							question.voted_by.pull(accData._id);
+							question = await question.save();
+
+							let asked_by = await Account.findOne({ username: question.asked_by });
+							asked_by.reputation -= 5;
+							asked_by = await asked_by.save();
+						}
+						break;
+				}
+				break;
+			case "answer":
+				let answer = await Answer.findById(req.body.aid).populate({
+					path: "voted_by.account",
+					model: "Account"
+				  });
+				accData = answer.voted_by.find(user => user.account.email == req.session.email);
+				switch(req.params.voteType) {
+					case "upvote":
+						if(!accData) {
+							answer.votes += 1;
+							answer.voted_by.push({account: user, vote: 1});
+							answer = await answer.save();
+
+							let ans_by = await Account.findOne({ username: answer.ans_by });
+							ans_by.reputation += 5;
+							ans_by = await ans_by.save();
+						}  else if(accData.vote == -1) {
+							answer.votes += 1;
+							answer.voted_by.pull(accData._id);
+							answer = await answer.save();
+
+							let ans_by = await Account.findOne({ username: answer.ans_by });
+							ans_by.reputation += 10;
+							ans_by = await ans_by.save();
+						}
+						break;
+					case "downvote":
+						if(!accData) {
+							answer.votes -= 1;
+							answer.voted_by.push({account: user, vote: -1});
+							answer = await answer.save();
+
+							let ans_by = await Account.findOne({ username: answer.ans_by });
+							ans_by.reputation -= 10;
+							ans_by = await ans_by.save();
+						}  else if(accData.vote == 1) {
+							answer.votes -= 1;
+							answer.voted_by.pull(accData._id);
+							answer = await answer.save();
+
+							let ans_by = await Account.findOne({ username: answer.ans_by });
+							ans_by.reputation -= 5;
+							ans_by = await ans_by.save();
+						}
+						break;
+				}
+				break;
+			case "comment":
+				let comment = await Comment.findById(req.body.cid).populate({
+					path: "voted_by.account",
+					model: "Account"
+				  });
+				
+				accData = comment.voted_by.find(user => user.account.email == req.session.email);
+
+				if(!accData) {
+					comment.votes += 1;
+					comment.voted_by.push({account: user, vote: 1});
+					comment = await comment.save();
+				}
+
+				break;
+		}
+
+		question = await Question.findById(req.body.qid).populate('tags').populate('comments').exec();
+		res.send(question);
+	} catch(err) {
+		console.error(err);
+	}
+});
+
 app.listen(port, () => {
 	console.log(`Server is listening on port ${port}`);
 });

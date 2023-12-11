@@ -12,7 +12,8 @@ let Comment = require('./models/comment');
 
 
 let mongoose = require('mongoose');
-let email = userArgs[0];
+// let email = userArgs[0];
+let username = userArgs[0];
 let password = userArgs[1];
 
 mongoose.connect("mongodb://127.0.0.1:27017/fake_so", { useNewUrlParser: true, useUnifiedTopology: true });
@@ -20,13 +21,14 @@ mongoose.connect("mongodb://127.0.0.1:27017/fake_so", { useNewUrlParser: true, u
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-async function createAdmin(email, password) {
+async function createAdmin(username, password) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     let admin = new Account(
         {
-            username: 'admin',
-            email: email,
+            username: username,
+            // email: email,
+			email: "admin@gmail.com",
             passwordHash: hashedPassword,
             accType: 'Admin',
             reputation: 9999
@@ -105,7 +107,8 @@ async function questionCreate(title, summary, text, tags, answers, account, ask_
 }
 
 const init = async () => {
-    let admin = await createAdmin(email, password);
+    // let admin = await createAdmin(email, password);
+	let admin = await createAdmin(username, password);
     let acc1 = await createAccount('shallen', 'hi@stonybrook.edu', '123456', 100);
     let acc2 = await createAccount('TESTING', 'test@gmail.com', '123456', 30);
     let t1 = await tagCreate('react', acc1);
