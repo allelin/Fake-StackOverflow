@@ -2,10 +2,16 @@ import axios from 'axios'
 
 export default function LeftNav(props) {
 	const handleLogout = async () => {
-		let logout = await axios.get(`http://localhost:8000/logout`, { withCredentials: true });
-		props.setUser(null);
-		props.handlePageSwap("welcome");
+		try {
+			let logout = await axios.get(`http://localhost:8000/logout`, { withCredentials: true });
+			props.setUser(null);
+			props.handlePageSwap("welcome");
+		} catch(err) {
+			console.log(err);
+			alert("Logged out failed!");
+		}
 	}
+		
 
 	const handleSignInUp = () => {
 		props.handlePageSwap("welcome");
