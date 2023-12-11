@@ -51,6 +51,7 @@ app.get('/questions/:sortby', (req, res) => {
 				.sort({ ask_date_time: -1 })
 				.exec()
 				.then(questionList => {
+					// console.log(questionList);
 					res.send(questionList);
 				})
 				.catch(err => console.error(err));
@@ -519,6 +520,36 @@ app.post("/postcomment/question", (req, res) => {
 					})
 					.then(populatedQ => {
 						res.send(populatedQ);
+					})
+				})
+			})
+		})
+	})
+	.catch(err => console.error(err));
+});
+
+app.post("/postcomment/answer", (req, res) => {
+	const newComment = Comment({
+		text: req.body.text,
+		comment_by: req.session.user,
+	});
+	// console.log(req.session);
+	newComment.save()
+	.then(newCom => {
+		Account.findOne({ email: req.session.email })
+		.then(account => {
+			account.comments.push(newCom);
+			account.save()
+			.then(account => {
+				Answer.findById(req.body.aid)
+				.then(answer => {
+					answer.comments.push(newCom);
+					answer.save()
+					.then(answer => {
+						Question.findById(req.body.qid).populate('tags').populate('comments').exec()
+						.then(question => {
+							res.send(question);
+						})
 					})
 				})
 			})

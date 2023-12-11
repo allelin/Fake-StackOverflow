@@ -7,10 +7,12 @@ export default function Answers(props) {
 	const [sStart, setSStart] = useState(0);
 	const [cStart, setCStart] = useState(0);
 	const [tagsHTML, setTagsHTML] = useState([]);
-	const [commentHTML, setCommentHTML] = useState([]);
+	const [commentHTMLList, setCommentHTMLList] = useState([]);
+	// const [ansComHTMLList, setAnsComHTMLList] = useState([]);
 	const [error, setError] = useState({
 		cText: '',
 	});
+	const [ansComponentsState, setAnsComponentsState] = useState([]);
 
 	const changeSStart = (num) => {
 		setSStart(sStart + num);
@@ -20,8 +22,10 @@ export default function Answers(props) {
 		setCStart(cStart + num);
 	}
 
-	const handleCommentSubmit = async (event, type, qid, aid) => {
+	const handleCommentSubmit = async (event, type, qid, aid, index) => {
 		event.preventDefault();
+
+		// console.log(index);
 
 		const formData = new FormData(event.target);
 		const cText = formData.get("commentText");
@@ -29,7 +33,6 @@ export default function Answers(props) {
 		const newError = {
 			cText: '',
 		}
-
 		if(!cText) {
 			newError.cText = "Do not leave comment box empty!";
 		} else if(cText.length > 140) {
@@ -44,7 +47,11 @@ export default function Answers(props) {
 			// }
 		}
 
-		setError(newError);
+		if(!aid){
+			setError(newError);
+		} else {
+			updateError(index, newError);
+		}
 
 		if(Object.values(newError).every(field => field === '')) {
 			if(type === "question") {
@@ -58,6 +65,7 @@ export default function Answers(props) {
 					console.log(err);
 				})
 			} else if(type === "answer") {
+				// console.log(type);
 				axios.post(`http://localhost:8000/postcomment/${type}/`, {qid: qid, aid: aid, text: cText}, { withCredentials: true })
 				.then(res => {
 					props.handleQuestionChange(res.data);
@@ -70,6 +78,23 @@ export default function Answers(props) {
 			
 		}
 	}
+
+	const updateCounter = (index, num) => {
+		setAnsComponentsState(prevState => {
+		  const updatedStates = [...prevState];
+		  updatedStates[index] = { ...updatedStates[index], counter: updatedStates[index].counter + num };
+		  return updatedStates;
+		});
+	  };
+	
+	  // Update the error for a specific ansComponent
+	  const updateError = (index, newError) => {
+		setAnsComponentsState(prevState => {
+		  const updatedStates = [...prevState];
+		  updatedStates[index] = { ...updatedStates[index], error: newError };
+		  return updatedStates;
+		});
+	  };
 
 	// console.log(props.user);
 
@@ -93,11 +118,70 @@ export default function Answers(props) {
         });
         Promise.all(promise).then(() => {
             ansList.sort((a, b) => new Date(b.ans_date_time) - new Date(a.ans_date_time));
-            const ansHTMLList = ansList.map((ans) => {
-                return <AnsComponent ans={ans} key={ans._id} />
+
+			const initialState = ansList.map(data => ({
+				data,
+				counter: 0,
+				error: { cText: '' },
+			}));
+		  
+			// Set the initial state
+			setAnsComponentsState(initialState);
+
+			// console.log(initialState);
+			// console.log(ansComponentsState);
+
+            const ansHTMLList = ansList.map((ans, index) => {
+            	return <AnsComponent 
+					ans={ans} 
+					key={ans._id} 
+					user={props.user} 
+					handleCommentSubmit={(event, type, qid, aid) => handleCommentSubmit(event, type, qid, aid, index)}
+					question={question}
+					// error={error}
+					// setAnsComHTMLList={setAnsComHTMLList}
+					// ansComHTMLList={ansComHTMLList}
+
+					counter={initialState[index].counter}
+          			error={initialState[index].error}
+					onUpdateCounter={(num) => updateCounter(index, num)}
+					// onUpdateError={newError => updateError(index, newError)}
+				/>
             });
             setAnswerHTMLList(ansHTMLList);
+			// console.log(answerHTMLList);
         });
+
+		// console.log(ansList);
+
+		// const initialState = ansList.map(data => ({
+		// 	data,
+		// 	counter: 0,
+		// 	error: { cText: '' },
+		// }));
+	  
+		// // Set the initial state
+		// setAnsComponentsState(initialState);
+
+		// const ansHTMLList = ansList.map((ans, index) => {
+		// 	return <AnsComponent 
+		// 		ans={ans} 
+		// 		key={ans._id} 
+		// 		user={props.user} 
+		// 		handleCommentSubmit={handleCommentSubmit}
+		// 		question={question}
+		// 		// error={error}
+		// 		setAnsComHTMLList={setAnsComHTMLList}
+		// 		ansComHTMLList={ansComHTMLList}
+
+		// 		counter={ansComponentsState.counter}
+		// 		  error={ansComponentsState.error}
+		// 		onUpdateCounter={(num) => updateCounter(index, num)}
+		// 		onUpdateError={newError => updateError(index, newError)}
+		// 	/>
+		// });
+
+		// setAnswerHTMLList(ansHTMLList);
 
 		const newTagsHTML = []
 		// console.log(question.tags);
@@ -121,22 +205,75 @@ export default function Answers(props) {
 				/>
 			);
 		});
-		setCommentHTML(newCommentHTML);
-    }, [question.answers]);
+		setCommentHTMLList(newCommentHTML);
+    }, [question]);
+
+	useEffect(() => {
+		// console.log(ansComponentsState);
+		if(ansComponentsState.length != 0) {
+			const updatedAnswerList = answerHTMLList.map((answer, index) => {
+				return (
+					<AnsComponent 
+						ans={answer.props.ans} 
+						key={answer.key} 
+						user={answer.props.user}
+						handleCommentSubmit={answer.props.handleCommentSubmit}
+						question={answer.props.question}
+						// error={answer.props.error}
+						// setAnsComHTMLList={answer.props.setAnsComHTMLList}
+						// ansComHTMLList={answer.props.ansComHTMLList}
+	
+						counter={ansComponentsState[index].counter}
+						error={ansComponentsState[index].error}
+						onUpdateCounter={answer.props.onUpdateCounter}
+						// onUpdateError={answer.props.onUpdateError}
+						/>
+				);
+			});
+		
+			setAnswerHTMLList(updatedAnswerList);
+		}
+	}, [ansComponentsState]);
 
     useEffect(() => {
 		const interval = setInterval(() => {
-		  const updatedAnswerList = answerHTMLList.map(answer => {
+		const updatedAnswerList = answerHTMLList.map(answer => {
 			return (
-			  < AnsComponent ans={answer.props.ans} key={answer.key} />
+				<AnsComponent 
+					ans={answer.props.ans} 
+					key={answer.key} 
+					user={answer.props.user}
+					handleCommentSubmit={answer.props.handleCommentSubmit}
+					question={answer.props.question}
+					// error={answer.props.error}
+					// setAnsComHTMLList={answer.props.setAnsComHTMLList}
+					// ansComHTMLList={answer.props.ansComHTMLList}
+
+					counter={answer.props.counter}
+          			error={answer.props.error}
+					onUpdateCounter={answer.props.onUpdateCounter}
+					// onUpdateError={answer.props.onUpdateError}
+					/>
 			);
-		  });
+		});
 	
-		  setAnswerHTMLList(updatedAnswerList);
+		setAnswerHTMLList(updatedAnswerList);
+
+		const updatedCommentList = commentHTMLList.map(comment => {
+			return (
+				<CommentComponent 
+				key={comment.key}
+				comment={comment.props.comment}
+				user={comment.props.user}
+				/>
+			);
+		});
+
+		setCommentHTMLList(updatedCommentList);
 		}, 1000);
 	
 		return () => clearInterval(interval);
-	  }, [answerHTMLList]);
+	  }, [answerHTMLList, commentHTMLList]);
 
     const textHTML = displayLinkInText(question.text)
 
@@ -180,10 +317,10 @@ export default function Answers(props) {
 				</div>
 			</div>
 			<div className="commentbox">
-            	{commentHTML.slice(cStart, cStart + 3)}
+				{commentHTMLList.slice(cStart, cStart + 3)}
 			</div>
 			{props.user ? <div className="commentbox">
-				<form className="commentForm" onSubmit={(event) => handleCommentSubmit(event, "question", question._id)}>
+				<form className="commentForm" onSubmit={(event) => handleCommentSubmit(event, "question", question._id, false)}>
 					<textarea name="commentText" className="commentTextArea" placeholder='Add a comment with no more than 140 characters'></textarea>
 					{error.cText && <div className="error-message">{error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
@@ -193,7 +330,7 @@ export default function Answers(props) {
 				{cStart > 0 ? <button type="button"
 				onClick={() => changeCStart(-3)}
 				>Prev</button> : <></>}
-				{cStart < (commentHTML.length - 3) ? <button type="button" 
+				{cStart < (commentHTMLList.length - 3) ? <button type="button" 
 				onClick={() => changeCStart(3)}
 				>Next</button> : <></>}
 			</div>
@@ -218,18 +355,62 @@ export default function Answers(props) {
 function AnsComponent(props) {
     const ans = props.ans;
     const textHTML = displayLinkInText(ans.text);
+
+	const newCommentHTML = [];
+	ans.comments.forEach(comment => {
+		newCommentHTML.push(
+			<CommentComponent
+				key={comment._id}
+				comment={comment}
+				user={props.user}
+			/>
+		);
+	});
+	// props.setAnsComHTMLList(newCommentHTML);
+
+	// console.log(props.error);
+
     return (
-        <div className="ansDiv">
-            <div className="ansDesc">
-                <p>{textHTML}</p>
-            </div>
-            <div className="ansAuthor">
-                <p>
-                    <span style={{ color: 'aquamarine' }}>{ans.ans_by}</span>
-                    {" answered " + getTimeDisplay(new Date(ans.ans_date_time), new Date())}
-                </p>
-            </div>
-        </div>
+		<div >
+			<div className="ansDiv">
+				{props.user ? <div className="vote_buttons">
+						<button type="button"
+						id="upvote_button"
+						// onClick={}
+						>Upvote</button>
+						<button type="button"
+						id="downvote_button"
+						// onClick={}
+						>Downvote</button>
+				</div> : <></>}
+				<h3>{ans.votes + " votes"}</h3>
+				<p className="ansDesc">{textHTML}</p>
+				<div className="ansAuthor">
+					<p>
+						<span style={{ color: 'aquamarine' }}>{ans.ans_by}</span>
+						{" answered " + getTimeDisplay(new Date(ans.ans_date_time), new Date())}
+					</p>
+				</div>
+			</div>
+			<div className="commentbox">
+				{newCommentHTML.slice(props.counter, props.counter + 3)}
+			</div>
+			{props.user ? <div className="commentbox">
+				<form className="commentForm" onSubmit={(event) => props.handleCommentSubmit(event, "answer", props.question._id, ans._id)}>
+					<textarea name="commentText" className="commentTextArea" placeholder='Add a comment with no more than 140 characters'></textarea>
+					{props.error.cText && <div className="error-message">{props.error.cText}</div>}
+					<input className="comment_button" type="submit" value="Post Comment"/>
+				</form>
+			</div> : <></>}
+			<div className="navigateElements">
+				{props.counter > 0 ? <button type="button"
+				onClick={() => props.onUpdateCounter(-3)}
+				>Prev</button> : <></>}
+				{props.counter < (newCommentHTML.length - 3) ? <button type="button" 
+				onClick={() => props.onUpdateCounter(3)}
+				>Next</button> : <></>}
+			</div>
+		</div>
     );
 }
 
@@ -253,7 +434,7 @@ function CommentComponent(props) {
 					>Upvote</button>
 			</div> : <></>}
 			<h3>{comment.votes + " votes"}</h3>
-			<p>{comment.text}</p>
+			<p className="comDesc">{comment.text}</p>
 			<div className="comAuthor">
                 <p>
                     <span style={{ color: 'blueviolet' }}>{comment.comment_by}</span>
