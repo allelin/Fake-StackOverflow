@@ -1,11 +1,3 @@
-
-// Setup database with initial test data.
-// Include an admin user.
-// Script should take admin credentials as arguments as described in the requirements doc.
-// Run this script to test your schema
-// Start the mongoDB service as a background process before running the script
-// Pass URL of your mongoDB instance as first argument(e.g., mongodb://127.0.0.1:27017/fake_so)
-
 const bcrypt = require('bcrypt');
 
 let userArgs = process.argv.slice(2);
@@ -22,8 +14,6 @@ let Comment = require('./models/comment');
 let mongoose = require('mongoose');
 let email = userArgs[0];
 let password = userArgs[1];
-
-
 
 mongoose.connect("mongodb://127.0.0.1:27017/fake_so", { useNewUrlParser: true, useUnifiedTopology: true });
 // mongoose.Promise = global.Promise;
@@ -64,8 +54,8 @@ async function tagCreate(name, account) {
     let tag = new Tag({ name: name });
 
     let tagsaved = await tag.save();
-    account.tags.push(tag);
-    account.save();
+    account.tags.push(tagsaved);
+    let acc = await account.save();
     return tagsaved;
 }
 
@@ -76,8 +66,8 @@ async function commentCreate(text, account, com_date_time) {
 
     let comment = new Comment(commentdetail);
     let commentsaved = await comment.save();
-    account.comments.push(comment);
-    account.save();
+    account.comments.push(commentsaved);
+    let acc = await account.save();
     return commentsaved;
 }
 
@@ -89,8 +79,8 @@ async function answerCreate(text, account, ans_date_time, ans_comments) {
 
     let answer = new Answer(answerdetail);
     let answersaved = await answer.save();
-    account.answers.push(answer);
-    account.save();
+    account.answers.push(answersaved);
+    let acc = await account.save();
     return answersaved;
 }
 
@@ -109,8 +99,8 @@ async function questionCreate(title, summary, text, tags, answers, account, ask_
     if (comments != false) qstndetail.comments = comments;
     let question = new Question(qstndetail);
     let questionsaved = await question.save();
-    account.questions.push(question);
-    account.save();
+    account.questions.push(questionsaved);
+    let acc = await account.save();
     return questionsaved;
 }
 
@@ -128,8 +118,8 @@ const init = async () => {
     let a3 = await answerCreate('Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background.', acc1, false, false);
     let a4 = await answerCreate('YourPreference yourPrefrence = YourPreference.getInstance(context); yourPreference.saveData(YOUR_KEY,YOUR_VALUE);', acc1, false, false);
     let a5 = await answerCreate('I just found all the above examples just too confusing, so I wrote my own. ', acc1, false, false);
-    await questionCreate('Programmatically navigate using React router', 'summary','the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.',[t1, t2], [a1, a2], acc1, false, false, false);
-    await questionCreate('android studio save string shared preference,','summar', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t2], [a3, a4, a5], acc2, false, 121, [c2]);
+    let question1 = await questionCreate('Programmatically navigate using React router', 'summary','the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.',[t1, t2], [a1, a2], acc1, false, false, false);
+    let question2 = await questionCreate('android studio save string shared preference,','summar', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t2], [a3, a4, a5], acc2, false, 121, [c2]);
     if(db) db.close();
     console.log('done');
   }
@@ -138,5 +128,5 @@ init()
     .catch(err => {
         console.log(err);
         if (db) db.close();
-    })
+    });
 
