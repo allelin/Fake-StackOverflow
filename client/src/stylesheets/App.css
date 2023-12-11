@@ -688,10 +688,12 @@ button, #post_question_button, #post_answer_button, .comment_button{
 .edit-button {
 	color: rgb(91, 231, 91);
 	font-weight: bold;
+	cursor: pointer;
 }
 .delete-button {
 	color: rgb(231, 91, 91);
 	font-weight: bold;
+	cursor: pointer;
 }
 .profile-questions li,
 .profile-answers li,
