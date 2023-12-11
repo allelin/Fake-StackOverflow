@@ -146,6 +146,8 @@ export default function Answers(props) {
           			error={initialState[index].error}
 					onUpdateCounter={(num) => updateCounter(index, num)}
 					// onUpdateError={newError => updateError(index, newError)}
+
+					handleVote={handleVote}
 				/>
             });
             setAnswerHTMLList(ansHTMLList);
@@ -196,12 +198,16 @@ export default function Answers(props) {
 		setTagsHTML(newTagsHTML);
 
 		const newCommentHTML = [];
-		question.comments.forEach(comment => {
+		question.comments
+		.sort((a, b) => new Date(b.comment_date_time) - new Date(a.comment_date_time))
+		.forEach(comment => {
 			newCommentHTML.push(
 				<CommentComponent
 					key={comment._id}
 					comment={comment}
 					user={props.user}
+					handleVote={handleVote}
+					question={question}
 				/>
 			);
 		});
@@ -227,6 +233,8 @@ export default function Answers(props) {
 						error={ansComponentsState[index].error}
 						onUpdateCounter={answer.props.onUpdateCounter}
 						// onUpdateError={answer.props.onUpdateError}
+
+						handleVote={handleVote}
 						/>
 				);
 			});
@@ -253,6 +261,8 @@ export default function Answers(props) {
           			error={answer.props.error}
 					onUpdateCounter={answer.props.onUpdateCounter}
 					// onUpdateError={answer.props.onUpdateError}
+
+					handleVote={answer.props.handleVote}
 					/>
 			);
 		});
@@ -265,6 +275,8 @@ export default function Answers(props) {
 				key={comment.key}
 				comment={comment.props.comment}
 				user={comment.props.user}
+				handleVote={comment.props.handleVote}
+				question={comment.props.question}
 				/>
 			);
 		});
@@ -277,17 +289,21 @@ export default function Answers(props) {
 
     const textHTML = displayLinkInText(question.text)
 
-	const handleVote = async (voteType, type, qid, aid, cid, index) => {
+	const handleVote = async (voteType, type, qid, aid, cid) => {
 		let question;
 		switch(type) {
 			case "question":
-				question = await axios.post(`http://localhost:8000/${type}/updatevotes`, {qid: qid}, { withCredentials: true })
+				question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid}, { withCredentials: true })).data;
 				break;
 			case "answer":
+				question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid, aid: aid}, { withCredentials: true })).data;
+				// console.log(question);
 				break;
 			case "comment":
+				question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid, cid: cid}, { withCredentials: true })).data;
 				break;
 		}
+		// console.log(question);
 		props.handleQuestionChange(question);
 	}
 
@@ -318,11 +334,11 @@ export default function Answers(props) {
 				{props.user ? props.user.reputation >= 50 ? <div className="vote_buttons">
 					<button type="button"
 					id="upvote_button"
-					// onClick={}
+					onClick={() => handleVote("upvote", "question", question._id)}
 					>Upvote</button>
 					<button type="button"
 					id="downvote_button"
-					// onClick={}
+					onClick={() => handleVote("downvote", "question", question._id)}
 					>Downvote</button>
 				</div>: <></> : <></>}
 				<h2>{question.votes + " votes"}</h2>
@@ -335,7 +351,17 @@ export default function Answers(props) {
 			</div>
 			{props.user ? <div className="commentbox">
 				<form className="commentForm" onSubmit={(event) => handleCommentSubmit(event, "question", question._id, false)}>
-					<textarea name="commentText" className="commentTextArea" placeholder='Add a comment with no more than 140 characters'></textarea>
+					<textarea 
+					name="commentText" 
+					className="commentTextArea" 
+					placeholder='Add a comment with no more than 140 characters'
+					// onKeyDown={(e) => {
+					// 	if (e.key === 'Enter') {
+					// 		e.preventDefault();
+					// 		handleCommentSubmit(e, "question", question._id, false);
+					// 	}
+					// }}
+					></textarea>
 					{error.cText && <div className="error-message">{error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
 				</form>
@@ -390,11 +416,11 @@ function AnsComponent(props) {
 				{props.user ? props.user.reputation >= 50 ? <div className="vote_buttons">
 						<button type="button"
 						id="upvote_button"
-						// onClick={}
+						onClick={() => props.handleVote("upvote", "answer", props.question._id, ans._id)}
 						>Upvote</button>
 						<button type="button"
 						id="downvote_button"
-						// onClick={}
+						onClick={() => props.handleVote("downvote", "answer", props.question._id, ans._id)}
 						>Downvote</button>
 				</div> : <></> : <></>}
 				<h3>{ans.votes + " votes"}</h3>
@@ -411,7 +437,17 @@ function AnsComponent(props) {
 			</div>
 			{props.user ? <div className="commentbox">
 				<form className="commentForm" onSubmit={(event) => props.handleCommentSubmit(event, "answer", props.question._id, ans._id)}>
-					<textarea name="commentText" className="commentTextArea" placeholder='Add a comment with no more than 140 characters'></textarea>
+					<textarea 
+					name="commentText" 
+					className="commentTextArea" 
+					placeholder='Add a comment with no more than 140 characters' 
+					// onKeyDown={(e) => {
+					// 	if (e.key === 'Enter') {
+					// 		e.preventDefault();
+					// 		props.handleCommentSubmit(e, "answer", props.question._id, ans._id);
+					// 	}
+					// }}
+					></textarea>
 					{props.error.cText && <div className="error-message">{props.error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
 				</form>
@@ -444,7 +480,7 @@ function CommentComponent(props) {
 			{props.user ? <div className="vote_buttons">
 					<button type="button"
 					id="upvote_button"
-					// onClick={}
+					onClick={() => props.handleVote("upvote", "comment", props.question._id, false, comment._id)}
 					>Upvote</button>
 			</div> : <></>}
 			<h3>{comment.votes + " votes"}</h3>

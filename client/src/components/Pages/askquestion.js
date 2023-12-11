@@ -75,9 +75,9 @@ export default function AskQuestion(props) {
 			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })).data;
 			props.setUser(updatedAccInfo);
 			// console.log(res);
-			// if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
-			// 	newError.qTags = "Insufficient reputation to create new tags";
-			// }
+			if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
+				newError.qTags = "Insufficient reputation to create new tags";
+			}
 		}
 
 
