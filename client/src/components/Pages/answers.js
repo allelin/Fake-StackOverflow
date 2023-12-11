@@ -257,7 +257,7 @@ function CommentComponent(props) {
 			<div className="comAuthor">
                 <p>
                     <span style={{ color: 'blueviolet' }}>{comment.comment_by}</span>
-                    {" commented by " + getTimeDisplay(new Date(comment.comment_date_time), new Date())}
+                    {" commented " + getTimeDisplay(new Date(comment.comment_date_time), new Date())}
                 </p>
             </div>
 		</div>

@@ -539,6 +539,56 @@ app.get(`/accountinfo`, (req, res) => {
 		})
 });
 
+app.get(`/getallaccounts`, (req, res) => {
+	Account.find({ accType: "User" })
+		.exec()
+		.then(accounts => {
+			res.send(accounts);
+		})
+		.catch(err => console.error(err));
+});
+
+app.get('/deletequestion/:id', async (req, res) => {
+	const qid = req.params.id;
+	const question = await Question.findByIdAndDelete(qid);
+	const user = question.asked_by;
+	let account = await Account.findOne({ email: req.session.email });
+	if (account) {
+		account.questions.pull(qid);
+		account = await account.save();
+	}
+	for (let i = 0; i < question.answers.length; i++) {
+	// question.answers.map(async (aid) => {
+		let ans = await Answer.findByIdAndDelete(question.answers[i]);
+		let acc = await Account.updateOne(
+			{ answers: question.answers[i] }, 
+			{ $pull: { answers: question.answers[i] } } 
+		  );
+		for (let j = 0; j < ans.comments.length; j++) {
+			let com = await Comment.findByIdAndDelete(ans.comments[j]);
+			let acc = await Account.updateOne(
+				{ comments: ans.comments[j] }, 
+				{ $pull: { comments: ans.comments[j] } } 
+			  );
+		}
+	}
+	for (let i = 0; i < question.comments.length; i++) {
+	// question.comments.map(async (cid) => {
+		let com = await Comment.findByIdAndDelete(cid);
+		let acc = await Account.updateOne(
+			{ comments: cid }, 
+			{ $pull: { comments: cid } } 
+		  );	
+	}
+	let updatedAcc = await Account.findOne({ email: req.session.email })
+	.populate("questions")
+	.populate("answers")
+	.populate("tags")
+	.exec()
+	res.send(updatedAcc);
+
+});
+
 app.listen(port, () => {
 	console.log(`Server is listening on port ${port}`);
 });

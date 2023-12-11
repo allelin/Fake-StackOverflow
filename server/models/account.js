@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var AccountSchema = new Schema(
     {
-        username: {type: String, required: true, unique: true},
+        username: {type: String, required: true},
         email: {type: String, required: true, unique: true},
         passwordHash: {type: String, required: true},
 		questions: {type: [{type: Schema.Types.ObjectId, ref: "Question"}], default: []},
