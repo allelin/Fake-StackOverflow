@@ -77,7 +77,7 @@ async function answerCreate(text, account, ans_date_time, ans_comments) {
     answerdetail = { text: text };
     if (account != false) answerdetail.ans_by = account.username;
     if (ans_date_time != false) answerdetail.ans_date_time = ans_date_time;
-    if (ans_comments != false) answerdetail.ans_comments = ans_comments;
+    if (ans_comments != false) answerdetail.comments = ans_comments;
 
     let answer = new Answer(answerdetail);
     let answersaved = await answer.save();

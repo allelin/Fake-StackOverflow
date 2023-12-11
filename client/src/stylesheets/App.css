@@ -731,16 +731,17 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	background-color: #f4f4f4;
 	padding: 20px;
 	border-radius: 8px;
-	min-width: 500px;
 }
-
+.profile-answers {
+	max-width: 30%;
+}
 .profile-tags {
-	flex: .3;
+	flex: 1;
 	margin: 0 10px;
 	background-color: #f4f4f4;
 	padding: 20px;
 	border-radius: 8px;
-	min-width: 250px;
+	min-width: fit-content;
 }
 
 .profile-questions p,

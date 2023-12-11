@@ -571,7 +571,7 @@ app.get(`/accountinfo`, (req, res) => {
 });
 
 app.get(`/getallaccounts`, (req, res) => {
-	Account.find({ accType: "User" })
+	Account.find()
 		.exec()
 		.then(accounts => {
 			res.send(accounts);
@@ -618,6 +618,34 @@ app.get('/deletequestion/:id', async (req, res) => {
 	.exec()
 	res.send(updatedAcc);
 
+});
+
+app.get('/deleteanswer/:id', async (req, res) => {
+	const aid = req.params.id;
+	const answer = await Answer.findByIdAndDelete(aid);
+	const user = answer.ans_by;
+	let account = await Account.findOne({ email: req.session.email });
+	if (account) {
+		account.answers.pull(aid);
+		account = await account.save();
+	}
+	let question = await Question.updateOne(
+		{ answers: aid }, 
+		{ $pull: { answers: aid } } 
+	  );
+	for (let i = 0; i < answer.comments.length; i++) {
+		let com = await Comment.findByIdAndDelete(answer.comments[i]);
+		let acc = await Account.updateOne(
+			{ comments: answer.comments[i] }, 
+			{ $pull: { comments: answer.comments[i] } } 
+		  );
+	}
+	let updatedAcc = await Account.findOne({ email: req.session.email })
+	.populate("questions")
+	.populate("answers")
+	.populate("tags")
+	.exec()
+	res.send(updatedAcc);
 });
 
 app.post('/:type/:voteType', async (req, res) => {
