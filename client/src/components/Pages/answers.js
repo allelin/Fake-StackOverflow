@@ -55,7 +55,7 @@ export default function Answers(props) {
 
 		if(Object.values(newError).every(field => field === '')) {
 			if(type === "question") {
-				axios.post(`http://localhost:8000/postcomment/${type}/`, {qid: qid, text: cText}, { withCredentials: true })
+				axios.post(`http://localhost:8000/postcomment/${type}`, {qid: qid, text: cText}, { withCredentials: true })
 				.then(res => {
 					// console.log(res.data);
 					props.handleQuestionChange(res.data);
@@ -66,7 +66,7 @@ export default function Answers(props) {
 				})
 			} else if(type === "answer") {
 				// console.log(type);
-				axios.post(`http://localhost:8000/postcomment/${type}/`, {qid: qid, aid: aid, text: cText}, { withCredentials: true })
+				axios.post(`http://localhost:8000/postcomment/${type}`, {qid: qid, aid: aid, text: cText}, { withCredentials: true })
 				.then(res => {
 					props.handleQuestionChange(res.data);
 					event.target.elements.commentText.value = '';
@@ -277,6 +277,20 @@ export default function Answers(props) {
 
     const textHTML = displayLinkInText(question.text)
 
+	const handleVote = async (voteType, type, qid, aid, cid, index) => {
+		let question;
+		switch(type) {
+			case "question":
+				question = await axios.post(`http://localhost:8000/${type}/updatevotes`, {qid: qid}, { withCredentials: true })
+				break;
+			case "answer":
+				break;
+			case "comment":
+				break;
+		}
+		props.handleQuestionChange(question);
+	}
+
 	// console.log(question);
 
     return (
@@ -301,7 +315,7 @@ export default function Answers(props) {
                 </div>
             </div>
 			<div id="qThirdBar">
-				{props.user ? <div className="vote_buttons">
+				{props.user ? props.user.reputation >= 50 ? <div className="vote_buttons">
 					<button type="button"
 					id="upvote_button"
 					// onClick={}
@@ -310,7 +324,7 @@ export default function Answers(props) {
 					id="downvote_button"
 					// onClick={}
 					>Downvote</button>
-				</div> : <></>}
+				</div>: <></> : <></>}
 				<h2>{question.votes + " votes"}</h2>
 				<div className="tags">
 					{tagsHTML}
@@ -373,7 +387,7 @@ function AnsComponent(props) {
     return (
 		<div >
 			<div className="ansDiv">
-				{props.user ? <div className="vote_buttons">
+				{props.user ? props.user.reputation >= 50 ? <div className="vote_buttons">
 						<button type="button"
 						id="upvote_button"
 						// onClick={}
@@ -382,7 +396,7 @@ function AnsComponent(props) {
 						id="downvote_button"
 						// onClick={}
 						>Downvote</button>
-				</div> : <></>}
+				</div> : <></> : <></>}
 				<h3>{ans.votes + " votes"}</h3>
 				<p className="ansDesc">{textHTML}</p>
 				<div className="ansAuthor">
