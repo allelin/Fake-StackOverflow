@@ -27,7 +27,7 @@ export default function Home(props) {
 	const changeQStart = (num) => {
 		setQStart(qStart + num);
 	}
-
+	// console.log(questionHTMLList);
 	useEffect(() => {
 		if(props.sort !== "search" && props.sort !== "tag") {
 			axios.get(`http://localhost:8000/questions/${props.sort}`, { withCredentials: true })
