@@ -6,6 +6,8 @@ export default function Profile(props) {
     const date = new Date(props.user.acc_date_created);
     const formattedDate = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     const [userList, setUserList] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [rows, setRows] = useState([]);
     // console.log(props.user)	;
     const handleQuestionDelete = async (qid) => {
         try {
@@ -17,6 +19,19 @@ export default function Profile(props) {
         }
     }
 
+    const handleAnswerDelete = async (aid) => {
+        try {
+            const respond = await axios.get(`http://localhost:8000/deleteanswer/${aid}`, { withCredentials: true });
+            console.log(respond.data);
+            props.setUser(respond.data);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const handleTagDelete = async (tid, index) => {
+        
+    }
     useEffect(() => {
         axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })
             .then(res => {
@@ -28,6 +43,32 @@ export default function Profile(props) {
                 const userList = res.data;
                 setUserList(userList);
             })
+
+        axios.get(`http://localhost:8000/tags`, { withCredentials: true })
+            .then(res => {
+                const tagsList = res.data;
+
+                const rows = [];
+                let currentRow = [];
+
+                tagsList.forEach((tag, index) => {
+                    if (index > 0 && index % 3 === 0) {
+                        rows.push(currentRow);
+                        currentRow = [];
+                    }
+
+                    currentRow.push(tag);
+                });
+
+                if (currentRow.length > 0) {
+                    rows.push(currentRow);
+                }
+
+                setRows(rows);
+                setTags(tagsList);
+
+            }
+            )
     }, []);
     // console.log(props.user);
 
@@ -46,20 +87,20 @@ export default function Profile(props) {
                     <ul>
                         {/* {props.user.questions.slice().reverse().map((question) => { */}
                         {props.user.questions
-                        .sort((a, b) => new Date(b.ask_date_time) - new Date(a.ask_date_time))
-                        .map((question) => {
-                            return <li key={question._id}>
-                                <p>{question.title}</p>
-                                <div>
-                                    <div className="edit-button"
-                                    // onClick={() => props.handleQuestionChange()}
-                                    >Edit</div>
-                                    <div className="delete-button"
-                                    onClick={() => handleQuestionDelete(question._id)}
-                                    >Delete</div>
-                                </div>
-                            </li>
-                        })}
+                            .sort((a, b) => new Date(b.ask_date_time) - new Date(a.ask_date_time))
+                            .map((question) => {
+                                return <li key={question._id}>
+                                    <p>{question.title}</p>
+                                    <div>
+                                        <div className="edit-button"
+                                        // onClick={() => props.handleQuestionChange()}
+                                        >Edit</div>
+                                        <div className="delete-button"
+                                            onClick={() => handleQuestionDelete(question._id)}
+                                        >Delete</div>
+                                    </div>
+                                </li>
+                            })}
                     </ul>
                 </div>
                 <div className="profile-answers">
@@ -73,7 +114,7 @@ export default function Profile(props) {
                                     // onClick={() => props.handleQuestionChange()}
                                     >Edit</div>
                                     <div className="delete-button"
-                                    // onClick={() => props.handleQuestionDelete(question._id)}
+                                        onClick={() => handleAnswerDelete(answer._id)}
                                     >Delete</div>
                                 </div>
                             </li>
@@ -88,8 +129,44 @@ export default function Profile(props) {
                 </div>
                 <div className="profile-tags">
                     <h2>My Tags</h2>
-                    <ul>
-                        {props.user.tags.map((tag) => {
+
+                    <table id="tagsDiv">
+                        <tbody>
+                            {rows.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                    {row.map((tag) => (
+                                        // tag ? 
+                                        <td key={tag.tag._id}>
+                                            <div className="tagBox">
+                                                <div className="tagName" onClick={() => {
+                                                    props.handleTagFilterChange(tag.tag);
+                                                    props.handleSortChange("tag");
+                                                    props.handlePageSwap("home");
+                                                }}>
+                                                    {tag.tag.name}
+                                                </div>
+                                                <p className="numOfQuestions">
+                                                    {tag.count === 1
+                                                        ? tag.count + " question"
+                                                        : tag.count + " questions"}
+                                                </p>
+                                                <div>
+                                                    <div className="edit-button"
+                                                    // onClick={() => props.handleQuestionChange()}
+                                                    >Edit</div>
+                                                    <div className="delete-button"
+                                                    // onClick={() => handleTagDelete(tag.tag._id, tag.count)}
+                                                    >Delete</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {/* <ul>
+                        {props.user.tags.map((tag, index) => {
                             return <li key={tag._id}>
                                 <p>{tag.name}</p>
                                 <div>
@@ -102,7 +179,7 @@ export default function Profile(props) {
                                 </div>
                             </li>
                         })}
-                    </ul>
+                    </ul> */}
                     {/* <ul>
                         {props.user.tags.map((tag) => {
                             return <li key={tag._id}>{tag.name}</li>
