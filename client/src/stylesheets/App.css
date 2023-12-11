@@ -651,16 +651,35 @@ button, #post_question_button, #post_answer_button, .comment_button{
 	justify-content: space-between;
 }
 
-.profile-questions li div {
+.profile-questions li div,
+.profile-answers li div,
+.profile-tags li div {
 	display: flex;
 	justify-content: space-around;
-	margin-top: 10px;
+	/* margin-top: 10px; */
+	margin: auto;
 }
 
+.profile-questions li div div,
+.profile-answers li div div,
+.profile-tags li div div {
+	padding: 5px;	
+}
+
+.edit-button {
+	color: rgb(91, 231, 91);
+	font-weight: bold;
+}
+.delete-button {
+	color: rgb(231, 91, 91);
+	font-weight: bold;
+}
 .profile-questions li,
 .profile-answers li,
-.profile-tags li {
+.profile-tags li,
+.user-list li {
   border: 1px solid #ccc;
+  display: flex;
   margin-bottom: 10px;
   padding: 10px;
 }
@@ -668,7 +687,8 @@ button, #post_question_button, #post_answer_button, .comment_button{
 
 .profile-questions ul,
 .profile-answers ul,
-.profile-tags ul {
+.profile-tags ul,
+.user-list ul {
 	list-style: none;
 	padding: 0;
 }
@@ -682,12 +702,39 @@ button, #post_question_button, #post_answer_button, .comment_button{
 
 
 .profile-questions,
-.profile-answers,
-.profile-tags {
+.profile-answers {
 	flex: 1;
 	margin: 0 10px;
 	background-color: #f4f4f4;
 	padding: 20px;
 	border-radius: 8px;
 	min-width: 500px;
+}
+
+.profile-tags {
+	flex: .3;
+	margin: 0 10px;
+	background-color: #f4f4f4;
+	padding: 20px;
+	border-radius: 8px;
+	min-width: 250px;
+}
+
+.profile-questions p,
+.profile-answers p,
+.profile-tags p {
+	width: 80%;
+}
+
+.user-list div {
+	width: 80%;
+}
+
+.user-list {
+	flex: .5;
+	margin: 20px 0px 20px;
+	background-color: #f4f4f4;
+	padding: 20px;
+	border-radius: 8px;
+	max-width: 300px;
 }
