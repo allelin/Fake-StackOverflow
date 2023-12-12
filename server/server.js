@@ -381,6 +381,29 @@ app.get('/tags', async (req, res) => {
 		.catch(err => console.error(err));
 });
 
+// app.get('/gettagsbyuser', async (req, res) => {
+// 	let acc = await Account.findOne({ email: req.session.email }).populate("tags");
+// 	let questionList = await Question.find().populate('tags');
+// 	let tagsList = await Tag.find();
+// 	const tagsListObj = [];
+// 	// console.log(questionList);
+// 	tagsList.forEach(tag => {
+// 		let count = 0;
+// 		questionList.forEach(question => {
+// 			question.tags.forEach(tagQ => {
+// 				if (tagQ.name == tag.name) {
+// 					count++;
+// 				}
+// 			})
+// 		});
+// 		if(acc.tags.some(userTag => userTag.name == tag.name)) {
+// 			tagsListObj.push({ tag: tag, count: count });
+// 		}
+// 	});
+// 	// console.log(tagsListObj);
+// 	res.send(tagsListObj);
+
+// })
 
 app.get('/answer/:id', (req, res) => {
 	Answer.findById(req.params.id)
@@ -600,6 +623,30 @@ app.post("/postcomment/answer", (req, res) => {
 		.catch(err => console.error(err));
 });
 
+app.get('/gettagsbyuser', async (req, res) => {
+	let acc = await Account.findOne({ email: req.session.email }).populate("tags");
+	let questionList = await Question.find().populate('tags');
+	let tagsList = await Tag.find();
+	const tagsListObj = [];
+	// console.log(questionList);
+	tagsList.forEach(tag => {
+		let count = 0;
+		questionList.forEach(question => {
+			question.tags.forEach(tagQ => {
+				if (tagQ.name == tag.name) {
+					count++;
+				}
+			})
+		});
+		if(acc.tags.some(userTag => userTag.name == tag.name)) {
+			tagsListObj.push({ tag: tag, count: count });
+		}
+	});
+	// console.log(tagsListObj);
+	res.send(tagsListObj);
+
+})
+
 app.get(`/accountinfo`, (req, res) => {
 	// console.log(req.session);
 	Account.findOne({ email: req.session.email })
@@ -614,7 +661,10 @@ app.get(`/accountinfo`, (req, res) => {
 
 app.get(`/getallaccounts`, (req, res) => {
 	Account.find()
-		.exec()
+	.populate("questions")
+	.populate("answers")
+	.populate("tags")
+	.exec()
 		.then(accounts => {
 			res.send(accounts);
 		})
@@ -624,7 +674,7 @@ app.get(`/getallaccounts`, (req, res) => {
 app.get('/deletequestion/:id', async (req, res) => {
 	const qid = req.params.id;
 	const question = await Question.findByIdAndDelete(qid);
-	const user = question.asked_by;
+	// const user = question.asked_by;
 	let account = await Account.findOne({ email: req.session.email });
 	if (account) {
 		account.questions.pull(qid);
@@ -739,6 +789,53 @@ app.get(`/deleteuser/:id`, async (req, res) => {
 		.exec()
 	res.send(userList);
 
+});
+
+app.get('/deletetag/:tid', async (req, res) => {
+	// let acc = await Account.findOne({ email: req.session.email }).populate("tags");
+	try {
+		let questionList = await Question.find().populate('tags');
+		if(questionList.some(question => question.tags.find(tag => tag._id == req.params.tid) && question.asked_by != req.session.user)) {
+			res.send(false);
+		} else {
+			let tag = await Tag.findByIdAndDelete(req.params.tid);
+			let questions = await Question.updateMany(
+				{ tags: req.params.tid },
+				{ $pull: { tags: req.params.tid } }
+			);
+			let acc = await Account.updateOne(
+				{ tags: req.params.tid },
+				{ $pull: { tags: req.params.tid } }
+			);
+
+			let updatedAcc = await Account.findOne({ email: req.session.email })
+				.populate("questions")
+				.populate("answers")
+				.populate("tags")
+				.exec();
+			res.send(updatedAcc);
+		}
+	} catch(err) {
+		console.error(err);
+	}
+	// let tagsList = await Tag.find();
+	// const tagsListObj = [];
+	// // console.log(questionList);
+	// tagsList.forEach(tag => {
+	// 	let count = 0;
+	// 	questionList.forEach(question => {
+	// 		question.tags.forEach(tagQ => {
+	// 			if (tagQ.name == tag.name) {
+	// 				count++;
+	// 			}
+	// 		})
+	// 	});
+	// 	if(acc.tags.some(userTag => userTag.name == tag.name)) {
+	// 		tagsListObj.push({ tag: tag, count: count });
+	// 	}
+	// });
+	// // console.log(tagsListObj);
+	// res.send(tagsListObj);
 });
 
 app.post('/:type/:voteType', async (req, res) => {

@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function Profile(props) {
-    const date = new Date(props.user.acc_date_created);
-    const formattedDate = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    // const date = new Date(props.user.acc_date_created);
+    // const formattedDate = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     const [userList, setUserList] = useState([]);
-    const [tags, setTags] = useState([]);
+    // const [tags, setTags] = useState([]);
     const [rows, setRows] = useState([]);
-    // console.log(props.user)	;
+	// const [tagError, setTagError] = useState();
+	const [userProfile, setUserProfile] = useState(props.user);
+    
     const handleQuestionDelete = async (qid) => {
         try {
             const respond = await axios.get(`http://localhost:8000/deletequestion/${qid}`, { withCredentials: true });
@@ -29,8 +31,19 @@ export default function Profile(props) {
         }
     }
 
-    const handleTagDelete = async (tid, index) => {
-
+    const handleTagDelete = async (tid) => {
+		try {
+            const respond = await axios.get(`http://localhost:8000/deletetag/${tid}`, { withCredentials: true });
+			if(!respond.data) {
+				alert("Cannot detele tag because it is used by other users!");
+			} else {
+				props.setUser(respond.data);
+			}
+            // console.log(respond.data);
+            
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     const handleUserDelete = async (uid) => {
@@ -38,7 +51,8 @@ export default function Profile(props) {
             const respond = await axios.get(`http://localhost:8000/deleteuser/${uid}`, { withCredentials: true });
             console.log(respond.data);
             setUserList(respond.data);
-            if (!respond.data.some(user => user.email === props.user.email)) {
+            // if (!respond.data.some(user => user.email === props.user.email)) {
+			if (!respond.data.some(user => user.email === userProfile.email)) {
                 let logout = await axios.get(`http://localhost:8000/logout`, { withCredentials: true });
                 props.setUser(null);
                 props.handlePageSwap("welcome");
@@ -51,7 +65,6 @@ export default function Profile(props) {
 	const handleQuestionEdit = async (question) => {
 		try {
 			// console.log(question);
-			// console.log(props.user);
 			let q = (await axios.get(`http://localhost:8000/getquestion/${question._id}`, { withCredentials: true })).data;
 			props.setEdit(q);
 			props.handlePageSwap("askquestion");
@@ -105,8 +118,10 @@ export default function Profile(props) {
                 const userList = res.data;
                 setUserList(userList);
             })
+    }, [userProfile]);
 
-        axios.get(`http://localhost:8000/tags`, { withCredentials: true })
+	useEffect(() => {
+		axios.get(`http://localhost:8000/gettagsbyuser`, { withCredentials: true })
             .then(res => {
                 const tagsList = res.data;
 
@@ -127,27 +142,31 @@ export default function Profile(props) {
                 }
 
                 setRows(rows);
-                setTags(tagsList);
+                // setTags(tagsList);
 
             }
-            )
-    }, []);
-    // console.log(props.user);
+		)
+	}, [userProfile]);
+	// }, [props.user]);
 
     return (
         <div className="profile-page">
-            {props.user.accType == "Admin" ? <h1>Admin Profile</h1> : <h1>User Profile</h1>}
+            {/* {props.user.accType == "Admin" ? <h1>Admin Profile</h1> : <h1>User Profile</h1>} */}
+			{userProfile.accType == "Admin" ? <h1>Admin Profile</h1> : <h1>User Profile</h1>}
             <div className="profile-inner">
                 <div className="profile-stats">
-                    <h2> Name: {props.user.username}</h2>
-                    {/* <p> Email: {props.user.email}</p> */}
-                    <p> Member since: {formattedDate}</p>
-                    <p> Reputation: {props.user.reputation}</p>
+                    {/* <h2> Name: {props.user.username}</h2> */}
+                    {/* <p> Member since: {formattedDate}</p> */}
+					<h2> Name: {userProfile.username}</h2>
+					<p> Member since: {(new Date(userProfile.acc_date_created)).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                    {/* <p> Reputation: {props.user.reputation}</p> */}
+					<p> Reputation: {userProfile.reputation}</p>
                 </div>
                 <div className="profile-questions">
                     <h2>My Questions</h2>
                     <ul>
-                        {props.user.questions
+                        {/* {props.user.questions */}
+						{userProfile.questions
                             .sort((a, b) => new Date(b.ask_date_time) - new Date(a.ask_date_time))
                             .map((question) => {
                                 return <li key={question._id}>
@@ -169,7 +188,8 @@ export default function Profile(props) {
                 <div className="profile-answers">
                     <h2>My Answers</h2>
                     <ul>
-                        {props.user.answers.map((answer) => {
+                        {/* {props.user.answers.map((answer) => { */}
+						{userProfile.answers.map((answer) => {
                             return <li key={answer._id}>
                                 <p>{answer.text}</p>
                                 <div>
@@ -183,12 +203,6 @@ export default function Profile(props) {
                             </li>
                         })}
                     </ul>
-                    {/* 
-                    <ul>
-                        {props.user.answers.map((answer) => {
-                            return <li key={answer._id}>{answer.text}</li>
-                        })}
-                    </ul> */}
                 </div>
                 <div className="profile-tags">
                     <h2>My Tags</h2>
@@ -218,7 +232,7 @@ export default function Profile(props) {
                                                     onClick={() => handleTagEdit(tag.tag)}
                                                     >Edit</div>
                                                     <div className="delete-button"
-                                                    // onClick={() => handleTagDelete(tag.tag._id, tag.count)}
+                                                    onClick={() => handleTagDelete(tag.tag._id)}
                                                     >Delete</div>
                                                 </div>
                                             </div>
@@ -228,35 +242,18 @@ export default function Profile(props) {
                             ))}
                         </tbody>
                     </table>
-                    {/* <ul>
-                        {props.user.tags.map((tag, index) => {
-                            return <li key={tag._id}>
-                                <p>{tag.name}</p>
-                                <div>
-                                    <div className="edit-button"
-                                    // onClick={() => props.handleQuestionChange()}
-                                    >Edit</div>
-                                    <div className="delete-button"
-                                    // onClick={() => props.handleQuestionDelete(question._id)}
-                                    >Delete</div>
-                                </div>
-                            </li>
-                        })}
-                    </ul> */}
-                    {/* <ul>
-                        {props.user.tags.map((tag) => {
-                            return <li key={tag._id}>{tag.name}</li>
-                        })}
-                    </ul> */}
                 </div>
             </div>
-            {props.user.accType == "Admin" ?
+            {/* {props.user.accType == "Admin" ? */}
+			{userProfile.accType == "Admin" ?
                 <div className='user-list'>
                     <h2>Users</h2>
                     <ul>
                         {userList.map((user) => {
                             return <li key={user._id}>
-                                <div>{user.username}</div>
+                                <div className='username'
+								onClick={() => setUserProfile(user)}
+								>{user.username}</div>
                                 <div>
                                     <div className="delete-button"
                                         onClick={() => handleUserDelete(user._id)}
@@ -267,6 +264,7 @@ export default function Profile(props) {
                     </ul>
                 </div> : <div></div>
             }
+			{userProfile.email != props.user.email ? <button id="admin-profile" type="button" onClick={() => setUserProfile(props.user)}>Admin Profile</button> : <></>}
         </div>
     )
 }

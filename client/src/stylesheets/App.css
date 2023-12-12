@@ -324,6 +324,7 @@ button, #post_question_button, #post_answer_button, #edit_tag_button, .comment_b
 
 .numOfQuestions {
 	text-align: center;
+	white-space: nowrap;
 }
 
 #qtopbar {
@@ -791,4 +792,12 @@ button, #post_question_button, #post_answer_button, #edit_tag_button, .comment_b
     margin: 30px 0px 0px;
     font-size: 30px;
     padding-left: 10px;
+}
+
+.username {
+	cursor: pointer;
+}
+
+#admin-profile {
+	margin-top: 10px;
 }

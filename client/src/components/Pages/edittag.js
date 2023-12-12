@@ -47,6 +47,22 @@ export default function EditTag(props) {
     //         console.log(err);
     //     }
     // }
+	const handleTagDelete = async (tid) => {
+		try {
+            const respond = await axios.get(`http://localhost:8000/deletetag/${tid}`, { withCredentials: true });
+			if(!respond.data) {
+				alert("Cannot detele tag because it is used by other users!");
+			} else {
+				props.setUser(respond.data);
+				props.setEdit(null);
+				props.handlePageSwap("profile");
+			}
+            // console.log(respond.data);
+            
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
 	return(
 		<div id="right_bar">
@@ -63,7 +79,7 @@ export default function EditTag(props) {
 				<div id="bottom">
 					<input id="edit_tag_button" type="submit" value="Edit Tag"/>
 					<button className="delete_button" type="button" 
-					// onClick={() => handleAnswerDelete(props.edit._id)}
+					onClick={() => handleTagDelete(props.edit._id)}
 					>Delete Tag</button>
 					<p style={{color: 'red'}}>* indicates mandatory fields</p>
 				</div>
