@@ -26,9 +26,11 @@ Add design docs in *images/*
         - updating the other parts of the database such as other user's answers and questions
     - added routes for admin
         - deleting users
+- init
+    - created the presets for the database
 - Testing
     - tested the cases from the documentations
     - fixed bugs and stressed tested the website
 - Created the UML diagram
- 
+
 ## Team Member 2 Contribution
