@@ -9,13 +9,14 @@ export default function Profile(props) {
     // const [tags, setTags] = useState([]);
     const [rows, setRows] = useState([]);
 	// const [tagError, setTagError] = useState();
-	const [userProfile, setUserProfile] = useState(props.user);
+	// const [userProfile, setUserProfile] = useState(props.user);
     
     const handleQuestionDelete = async (qid) => {
         try {
             const respond = await axios.get(`http://localhost:8000/deletequestion/${qid}`, { withCredentials: true });
             // console.log(respond.data);
-            props.setUser(respond.data);
+            // props.setUser(respond.data);
+			props.setUserProfile(respond.data);
         } catch (err) {
             console.log(err);
         }
@@ -25,7 +26,8 @@ export default function Profile(props) {
         try {
             const respond = await axios.get(`http://localhost:8000/deleteanswer/${aid}`, { withCredentials: true });
             // console.log(respond.data);
-            props.setUser(respond.data);
+            // props.setUser(respond.data);
+			props.setUserProfile(respond.data);
         } catch (err) {
             console.log(err);
         }
@@ -33,11 +35,12 @@ export default function Profile(props) {
 
     const handleTagDelete = async (tid) => {
 		try {
-            const respond = await axios.get(`http://localhost:8000/deletetag/${tid}`, { withCredentials: true });
+            const respond = await axios.post(`http://localhost:8000/deletetag/${tid}`, {email: props.userProfile.email, user: props.userProfile.username}, { withCredentials: true });
 			if(!respond.data) {
 				alert("Cannot detele tag because it is used by other users!");
 			} else {
-				props.setUser(respond.data);
+				// props.setUser(respond.data);
+				props.setUserProfile(respond.data);
 			}
             // console.log(respond.data);
             
@@ -49,10 +52,10 @@ export default function Profile(props) {
     const handleUserDelete = async (uid) => {
         try {
             const respond = await axios.get(`http://localhost:8000/deleteuser/${uid}`, { withCredentials: true });
-            console.log(respond.data);
+            // console.log(respond.data);
             setUserList(respond.data);
             // if (!respond.data.some(user => user.email === props.user.email)) {
-			if (!respond.data.some(user => user.email === userProfile.email)) {
+			if (!respond.data.some(user => user.email === props.userProfile.email)) {
                 let logout = await axios.get(`http://localhost:8000/logout`, { withCredentials: true });
                 props.setUser(null);
                 props.handlePageSwap("welcome");
@@ -107,21 +110,28 @@ export default function Profile(props) {
 	}
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })
+        axios.get(`http://localhost:8000/accountinfo/${props.userProfile.email}`, { withCredentials: true })
             .then(res => {
                 const userData = res.data;
 				// console.log(userData);
-                props.setUser(userData);
+                // props.setUser(userData);
+				props.setUserProfile(userData);
             });
-        axios.get(`http://localhost:8000/getallaccounts`, { withCredentials: true })
+        // axios.get(`http://localhost:8000/getallaccounts`, { withCredentials: true })
+        //     .then(res => {
+        //         const userList = res.data;
+        //         setUserList(userList);
+        //     })
+    }, []);
+
+	useEffect(() => {
+		axios.get(`http://localhost:8000/getallaccounts`, { withCredentials: true })
             .then(res => {
                 const userList = res.data;
                 setUserList(userList);
-            })
-    }, [userProfile]);
-
-	useEffect(() => {
-		axios.get(`http://localhost:8000/gettagsbyuser`, { withCredentials: true })
+            });
+		
+		axios.get(`http://localhost:8000/gettagsbyuserprofile/${props.userProfile.email}`, { withCredentials: true })
             .then(res => {
                 const tagsList = res.data;
 
@@ -146,27 +156,27 @@ export default function Profile(props) {
 
             }
 		)
-	}, [userProfile]);
+	}, [props.userProfile]);
 	// }, [props.user]);
 
     return (
         <div className="profile-page">
             {/* {props.user.accType == "Admin" ? <h1>Admin Profile</h1> : <h1>User Profile</h1>} */}
-			{userProfile.accType == "Admin" ? <h1>Admin Profile</h1> : <h1>User Profile</h1>}
+			{props.userProfile.accType == "Admin" ? <h1>Admin Profile</h1> : <h1>User Profile</h1>}
             <div className="profile-inner">
                 <div className="profile-stats">
                     {/* <h2> Name: {props.user.username}</h2> */}
                     {/* <p> Member since: {formattedDate}</p> */}
-					<h2> Name: {userProfile.username}</h2>
-					<p> Member since: {(new Date(userProfile.acc_date_created)).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+					<h2> Name: {props.userProfile.username}</h2>
+					<p> Member since: {(new Date(props.userProfile.acc_date_created)).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                     {/* <p> Reputation: {props.user.reputation}</p> */}
-					<p> Reputation: {userProfile.reputation}</p>
+					<p> Reputation: {props.userProfile.reputation}</p>
                 </div>
                 <div className="profile-questions">
                     <h2>My Questions</h2>
                     <ul>
                         {/* {props.user.questions */}
-						{userProfile.questions
+						{props.userProfile.questions
                             .sort((a, b) => new Date(b.ask_date_time) - new Date(a.ask_date_time))
                             .map((question) => {
                                 return <li key={question._id}>
@@ -189,7 +199,7 @@ export default function Profile(props) {
                     <h2>My Answers</h2>
                     <ul>
                         {/* {props.user.answers.map((answer) => { */}
-						{userProfile.answers.map((answer) => {
+						{props.userProfile.answers.map((answer) => {
                             return <li key={answer._id}>
                                 <p>{answer.text}</p>
                                 <div>
@@ -245,14 +255,14 @@ export default function Profile(props) {
                 </div>
             </div>
             {/* {props.user.accType == "Admin" ? */}
-			{userProfile.accType == "Admin" ?
+			{props.userProfile.accType == "Admin" ?
                 <div className='user-list'>
                     <h2>Users</h2>
                     <ul>
                         {userList.map((user) => {
                             return <li key={user._id}>
                                 <div className='username'
-								onClick={() => setUserProfile(user)}
+								onClick={() => props.setUserProfile(user)}
 								>{user.username}</div>
                                 <div>
                                     <div className="delete-button"
@@ -264,7 +274,7 @@ export default function Profile(props) {
                     </ul>
                 </div> : <div></div>
             }
-			{userProfile.email != props.user.email ? <button id="admin-profile" type="button" onClick={() => setUserProfile(props.user)}>Admin Profile</button> : <></>}
+			{props.userProfile.email != props.user.email ? <button id="admin-profile" type="button" onClick={() => props.setUserProfile(props.user)}>Admin Profile</button> : <></>}
         </div>
     )
 }

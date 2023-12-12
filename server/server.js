@@ -225,6 +225,12 @@ app.post('/verifytags', (req, res) => {
 //middleware get all tags
 const getTags = function (req, res, next) {
 	const tagsArr = req.body.tags;
+	let email;
+	if(req.body.email) {
+		email = req.body.email;
+	} else {
+		email = req.session.email;
+	}
 
 	// console.log(tagsArr);
 
@@ -236,7 +242,7 @@ const getTags = function (req, res, next) {
 				} else {
 					let newTag = new Tag({ name: tagName });
 					newTag = await newTag.save()
-					let acc = await Account.findOne({ email: req.session.email });
+					let acc = await Account.findOne({ email: email });
 					acc.tags.push(newTag);
 					acc = await acc.save();
 					return newTag;
@@ -308,6 +314,7 @@ app.use('/postquestion', getTags);
 
 app.post('/postquestion', async (req, res) => {
 	let newQuestion;
+	let email;
 	if(!req.body.id) {
 		newQuestion = Question({
 			title: req.body.title,
@@ -316,19 +323,21 @@ app.post('/postquestion', async (req, res) => {
 			tags: req.body.tags,
 			asked_by: req.session.user,
 		});
+		email = req.session.email;
 	} else {
 		newQuestion = await Question.findById(req.body.id);
 		newQuestion.title = req.body.title;
 		newQuestion.summary = req.body.summary;
 		newQuestion.text = req.body.text;
 		newQuestion.tags = req.body.tags;
+		email = req.body.email;
 	}
 	// console.log(req.body.tags);
 	
 
 	newQuestion.save()
 		.then(newQ => {
-			Account.findOne({ email: req.session.email })
+			Account.findOne({ email: email })
 				.then(account => {
 					if(!req.body.id) {
 						account.questions.push(newQ);
@@ -436,19 +445,22 @@ app.post(`/question/updateviews`, (req, res) => {
 app.post(`/postanswer`, async (req, res) => {
 	// console.log(req.session);
 	let newAnswer;
+	let email;
 	if(!req.body.id) {
 		newAnswer = Answer({
 			text: req.body.text,
 			ans_by: req.session.user,
 		});
+		email = req.session.email;
 	} else {
 		newAnswer = await Answer.findById(req.body.id);
 		newAnswer.text = req.body.text;
+		email = req.body.email;
 	}
 	
 	newAnswer.save()
 		.then((newAns) => {
-			Account.findOne({ email: req.session.email })
+			Account.findOne({ email: email })
 			.then(account => {
 				if(!req.body.id) {
 					account.answers.push(newAns);
@@ -623,8 +635,8 @@ app.post("/postcomment/answer", (req, res) => {
 		.catch(err => console.error(err));
 });
 
-app.get('/gettagsbyuser', async (req, res) => {
-	let acc = await Account.findOne({ email: req.session.email }).populate("tags");
+app.get('/gettagsbyuserprofile/:email', async (req, res) => {
+	let acc = await Account.findOne({ email: req.params.email }).populate("tags");
 	let questionList = await Question.find().populate('tags');
 	let tagsList = await Tag.find();
 	const tagsListObj = [];
@@ -647,9 +659,21 @@ app.get('/gettagsbyuser', async (req, res) => {
 
 })
 
-app.get(`/accountinfo`, (req, res) => {
+app.get(`/accountinfo/user`, (req, res) => {
 	// console.log(req.session);
 	Account.findOne({ email: req.session.email })
+		.populate("questions")
+		.populate("answers")
+		.populate("tags")
+		.exec()
+		.then(account => {
+			res.send(account);
+		})
+});
+
+app.get(`/accountinfo/:email`, (req, res) => {
+	// console.log(req.session);
+	Account.findOne({ email: req.params.email })
 		.populate("questions")
 		.populate("answers")
 		.populate("tags")
@@ -674,8 +698,9 @@ app.get(`/getallaccounts`, (req, res) => {
 app.get('/deletequestion/:id', async (req, res) => {
 	const qid = req.params.id;
 	const question = await Question.findByIdAndDelete(qid);
-	// const user = question.asked_by;
-	let account = await Account.findOne({ email: req.session.email });
+	const user = question.asked_by;
+	// let account = await Account.findOne({ email: req.session.email });
+	let account = await Account.findOne({ username: user });
 	if (account) {
 		account.questions.pull(qid);
 		account = await account.save();
@@ -703,7 +728,8 @@ app.get('/deletequestion/:id', async (req, res) => {
 			{ $pull: { comments: question.comments[i] } }
 		);
 	}
-	let updatedAcc = await Account.findOne({ email: req.session.email })
+	// let updatedAcc = await Account.findOne({ email: req.session.email })
+	let updatedAcc = await Account.findOne({ username: user })
 		.populate("questions")
 		.populate("answers")
 		.populate("tags")
@@ -716,7 +742,7 @@ app.get('/deleteanswer/:id', async (req, res) => {
 	const aid = req.params.id;
 	const answer = await Answer.findByIdAndDelete(aid);
 	const user = answer.ans_by;
-	let account = await Account.findOne({ email: req.session.email });
+	let account = await Account.findOne({ username: user });
 	if (account) {
 		account.answers.pull(aid);
 		account = await account.save();
@@ -732,7 +758,7 @@ app.get('/deleteanswer/:id', async (req, res) => {
 			{ $pull: { comments: answer.comments[i] } }
 		);
 	}
-	let updatedAcc = await Account.findOne({ email: req.session.email })
+	let updatedAcc = await Account.findOne({ username: user })
 		.populate("questions")
 		.populate("answers")
 		.populate("tags")
@@ -791,11 +817,11 @@ app.get(`/deleteuser/:id`, async (req, res) => {
 
 });
 
-app.get('/deletetag/:tid', async (req, res) => {
+app.post('/deletetag/:tid', async (req, res) => {
 	// let acc = await Account.findOne({ email: req.session.email }).populate("tags");
 	try {
 		let questionList = await Question.find().populate('tags');
-		if(questionList.some(question => question.tags.find(tag => tag._id == req.params.tid) && question.asked_by != req.session.user)) {
+		if(questionList.some(question => question.tags.find(tag => tag._id == req.params.tid) && question.asked_by != req.body.user)) {
 			res.send(false);
 		} else {
 			let tag = await Tag.findByIdAndDelete(req.params.tid);
@@ -808,7 +834,7 @@ app.get('/deletetag/:tid', async (req, res) => {
 				{ $pull: { tags: req.params.tid } }
 			);
 
-			let updatedAcc = await Account.findOne({ email: req.session.email })
+			let updatedAcc = await Account.findOne({ email: req.body.email })
 				.populate("questions")
 				.populate("answers")
 				.populate("tags")

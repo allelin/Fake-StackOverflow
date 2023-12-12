@@ -22,7 +22,10 @@ export default function Header(props) {
 	// console.log(props.user.);
 	return (
 		<div className="header">
-			{props.user ? <div id="empty_space" onClick={() => handlePageSwap("profile")}>View Profile <br></br> {props.user.username} <br></br> Reputation: {props.user.reputation} </div> : <div id="empty_space">Welcome <br></br> Guest </div>}
+			{props.user ? <div id="empty_space" onClick={() => {
+				props.setUserProfile(props.user);
+				handlePageSwap("profile");
+				}}>View Profile <br></br> {props.user.username} <br></br> Reputation: {props.user.reputation} </div> : <div id="empty_space">Welcome <br></br> Guest </div>}
 			<h1 id = "title">Fake StackOverflow</h1>
 			<div id="search-bar">
 				<input type="text" 

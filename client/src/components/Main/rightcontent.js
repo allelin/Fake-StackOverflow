@@ -12,6 +12,7 @@ export default function RightContent(props) {
 	const [question, setQuestion] = useState(null);
 	const [tag, setTag] = useState(null);
 	const [edit, setEdit] = useState(null);
+	// const [userProfile, setUserProfile] = useState()
 
 	const handleQuestionChange = (q) => {
 		setQuestion(q);
@@ -43,6 +44,9 @@ export default function RightContent(props) {
 			setUser={props.setUser}
 			edit={edit}
 			setEdit={setEdit}
+
+			userProfile={props.userProfile}
+			// setUserProfile={props.setUserProfile}
 			/>
 			break;
 		case "tags":
@@ -68,7 +72,10 @@ export default function RightContent(props) {
 			user={props.user}
 			edit={edit}
 			setEdit={setEdit}
-			setUser={props.setUser}
+			// setUser={props.setUser}
+
+			userProfile={props.userProfile}
+			// setUserProfile={props.setUserProfile}
 			/>;
 			break;
 		case "profile":
@@ -80,6 +87,9 @@ export default function RightContent(props) {
 			handleQuestionChange={handleQuestionChange}
 			handleTagFilterChange={handleTagFilterChange}
 			handleSortChange={props.handleSortChange}
+
+			userProfile={props.userProfile}
+			setUserProfile={props.setUserProfile}
 			/>
 			break;
 		case "edittag":
@@ -87,7 +97,10 @@ export default function RightContent(props) {
 			edit={edit}
 			setEdit={setEdit}
 			handlePageSwap={props.handlePageSwap}
-			setUser={props.setUser}
+			// setUser={props.setUser}
+
+			userProfile={props.userProfile}
+			// setUserProfile={props.setUserProfile}
 			/>
 			break;
 		default:
