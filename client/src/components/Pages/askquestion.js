@@ -28,7 +28,7 @@ export default function AskQuestion(props) {
 		if(!qTitle) {
 			newError.qTitle = "Question Title required!";
 		} else if(qTitle.length > 50) {
-			newError.qTitle = "Question Title must be less than 100 words!";
+			newError.qTitle = "Question Title must be less than 50 characters!";
 		}
 
 		if(!qSummary) {

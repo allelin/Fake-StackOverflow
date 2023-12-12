@@ -631,7 +631,6 @@ button, #post_question_button, #post_answer_button, #edit_tag_button, .comment_b
 	/* justify-content: space-between; */
 	border: 1px dotted black;
 	padding: 0 10px;
-	min-width: fit-content;
 }
 
 .comment h3 {
@@ -643,7 +642,7 @@ button, #post_question_button, #post_answer_button, #edit_tag_button, .comment_b
 .comDesc {
 	margin: auto;
 	padding: 5px;
-	max-width: 80%;
+	max-width: 70%;
 	overflow-wrap: break-word;
 }
 

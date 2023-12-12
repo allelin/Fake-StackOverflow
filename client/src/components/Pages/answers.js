@@ -349,7 +349,7 @@ export default function Answers(props) {
 			<div className="commentbox">
 				{commentHTMLList.slice(cStart, cStart + 3)}
 			</div>
-			{props.user ? <div className="commentbox">
+			{props.user ? props.user.reputation >= 50 ? <div className="commentbox">
 				<form className="commentForm" onSubmit={(event) => handleCommentSubmit(event, "question", question._id, false)}>
 					<textarea 
 					name="commentText" 
@@ -365,7 +365,7 @@ export default function Answers(props) {
 					{error.cText && <div className="error-message">{error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
 				</form>
-			</div> : <></>}
+			</div> : <></> : <></>}
 			<div className="navigateElements">
 				{cStart > 0 ? <button type="button"
 				onClick={() => changeCStart(-3)}
@@ -435,7 +435,7 @@ function AnsComponent(props) {
 			<div className="commentbox">
 				{newCommentHTML.slice(props.counter, props.counter + 3)}
 			</div>
-			{props.user ? <div className="commentbox">
+			{props.user ? props.user.reputation >= 50 ? <div className="commentbox">
 				<form className="commentForm" onSubmit={(event) => props.handleCommentSubmit(event, "answer", props.question._id, ans._id)}>
 					<textarea 
 					name="commentText" 
@@ -451,7 +451,7 @@ function AnsComponent(props) {
 					{props.error.cText && <div className="error-message">{props.error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
 				</form>
-			</div> : <></>}
+			</div> : <></> : <></>}
 			<div className="navigateElements">
 				{props.counter > 0 ? <button type="button"
 				onClick={() => props.onUpdateCounter(-3)}
