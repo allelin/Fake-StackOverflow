@@ -10,115 +10,116 @@ export default function AskQuestion(props) {
 	});
 
 	const handleSubmit = async (event) => {
-		event.preventDefault();
+		try {
+			event.preventDefault();
 
-		const formData = new FormData(event.target);
-		const qTitle = formData.get("qTitle").trim();
-		const qText = formData.get("qText").trim();
-		const qSummary = formData.get("qSummary").trim();
-		const tagArr = formData.get("qTags").trim().split(" ").filter(Boolean).map(tagName => tagName.toLowerCase());
+			const formData = new FormData(event.target);
+			const qTitle = formData.get("qTitle").trim();
+			const qText = formData.get("qText").trim();
+			const qSummary = formData.get("qSummary").trim();
+			const tagArr = formData.get("qTags").trim().split(" ").filter(Boolean).map(tagName => tagName.toLowerCase());
 
-		const newError = {
-			qTitle: '',
-			qText: '',
-			qSummary: '',
-			qTags: '',
-		}
+			const newError = {
+				qTitle: '',
+				qText: '',
+				qSummary: '',
+				qTags: '',
+			}
 
-		if(!qTitle) {
-			newError.qTitle = "Question Title required!";
-		} else if(qTitle.length > 50) {
-			newError.qTitle = "Question Title must be less than 50 characters!";
-		}
+			if(!qTitle) {
+				newError.qTitle = "Question Title required!";
+			} else if(qTitle.length > 50) {
+				newError.qTitle = "Question Title must be less than 50 characters!";
+			}
 
-		if(!qSummary) {
-			newError.qSummary = "Question Summary required!";
-		} 
-		if(qSummary.length > 140) {
-			newError.qSummary = "Question Summary must be less than 140 words!";
-		} 
-		// else {
-		// 	const hyperlinkFormat = /\[([^\]]*)\]\(([^)]*)\)/g;
-		// 	const matches = qSummary.matchAll(hyperlinkFormat);
-		// 	for (const match of matches) {
-		// 		if (match[1] === "" || match[2] === "" || (!match[2].startsWith("https://") && !match[2].startsWith("http://"))) {
-		// 			newError.qSummary = "Invalid hyperlink format. Please use [text](https://google.com) format for hyperlinks.";
-		// 			break;
-		// 		}
-		// 	}
-		// }
+			if(!qSummary) {
+				newError.qSummary = "Question Summary required!";
+			} 
+			if(qSummary.length > 140) {
+				newError.qSummary = "Question Summary must be less than 140 words!";
+			} 
+			// else {
+			// 	const hyperlinkFormat = /\[([^\]]*)\]\(([^)]*)\)/g;
+			// 	const matches = qSummary.matchAll(hyperlinkFormat);
+			// 	for (const match of matches) {
+			// 		if (match[1] === "" || match[2] === "" || (!match[2].startsWith("https://") && !match[2].startsWith("http://"))) {
+			// 			newError.qSummary = "Invalid hyperlink format. Please use [text](https://google.com) format for hyperlinks.";
+			// 			break;
+			// 		}
+			// 	}
+			// }
 
 
 
-		if(!qText) {
-			newError.qText = "Question Text required!";
-		} else {
-			const hyperlinkFormat = /\[([^\]]*)\]\(([^)]*)\)/g;
-		
-			const matches = qText.matchAll(hyperlinkFormat);
-			for (const match of matches) {
-				if (match[1] === "" || match[2] === "" || (!match[2].startsWith("https://") && !match[2].startsWith("http://"))) {
-					newError.qText = "Invalid hyperlink format. Please use [text](https://google.com) format for hyperlinks.";
-					break;
+			if(!qText) {
+				newError.qText = "Question Text required!";
+			} else {
+				const hyperlinkFormat = /\[([^\]]*)\]\(([^)]*)\)/g;
+			
+				const matches = qText.matchAll(hyperlinkFormat);
+				for (const match of matches) {
+					if (match[1] === "" || match[2] === "" || (!match[2].startsWith("https://") && !match[2].startsWith("http://"))) {
+						newError.qText = "Invalid hyperlink format. Please use [text](https://google.com) format for hyperlinks.";
+						break;
+					}
 				}
 			}
-		}
 
-		if(tagArr.length === 0) {
-			newError.qTags = "At least 1 Tag Required!";
-		} else if(tagArr.length > 5){
-			newError.qTags = "More than 5 Tags!";
-		} else if(!(tagArr.every(tag => tag.length < 11))) {
-			// console.log(tagArr);
-			// console.log(props.edit.tags);
-			newError.qTags = "Not all tags are of max length of 10!";
-		} else {
-			let res = await axios.post(`http://localhost:8000/verifytags`, {tags: tagArr}, { withCredentials: true });
-			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo/user`, { withCredentials: true })).data;
-			props.setUser(updatedAccInfo);
-			// console.log(res);
-			if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
-				newError.qTags = "Insufficient reputation to create new tags";
-			}
-		}
-
-
-		setError(newError);
-
-		if(Object.values(newError).every(field => field === '')) {
-			let id = null;
-			let email = null;
-			if(props.edit) {
-				id = props.edit._id;
-				email = props.userProfile.email;
-			}
-			const newQuestion = {
-				title: qTitle,
-				text: qText,
-				summary: qSummary,
-				tags: tagArr,
-				// username: props.user.username,
-				// email: props.user.email
-				id: id,
-				email: email
+			if(tagArr.length === 0) {
+				newError.qTags = "At least 1 Tag Required!";
+			} else if(tagArr.length > 5){
+				newError.qTags = "More than 5 Tags!";
+			} else if(!(tagArr.every(tag => tag.length < 11))) {
+				// console.log(tagArr);
+				// console.log(props.edit.tags);
+				newError.qTags = "Not all tags are of max length of 10!";
+			} else {
+				let res = await axios.post(`http://localhost:8000/verifytags`, {tags: tagArr}, { withCredentials: true });
+				let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo/user`, { withCredentials: true })).data;
+				props.setUser(updatedAccInfo);
+				// console.log(res);
+				if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
+					newError.qTags = "Insufficient reputation to create new tags";
+				}
 			}
 
-			// axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true })
-			// .then(res => {
-			// 	props.handlePageSwap("home");
-			// 	props.handleSortChange("newest");
-			// })
-			// .catch(err => {
-			// 	// console.log(error.response.status);
-			// 	if(err.response.status === 403) {
-			// 		newError.qTags = err.response.data;
-			// 		// console.log(error.response.data);
-			// 		setError(newError);
-			// 		console.log(error);
-			// 	}
-			// })
 
-			try {
+			setError(newError);
+
+			if(Object.values(newError).every(field => field === '')) {
+				let id = null;
+				let email = null;
+				if(props.edit) {
+					id = props.edit._id;
+					email = props.userProfile.email;
+				}
+				const newQuestion = {
+					title: qTitle,
+					text: qText,
+					summary: qSummary,
+					tags: tagArr,
+					// username: props.user.username,
+					// email: props.user.email
+					id: id,
+					email: email
+				}
+
+				// axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true })
+				// .then(res => {
+				// 	props.handlePageSwap("home");
+				// 	props.handleSortChange("newest");
+				// })
+				// .catch(err => {
+				// 	// console.log(error.response.status);
+				// 	if(err.response.status === 403) {
+				// 		newError.qTags = err.response.data;
+				// 		// console.log(error.response.data);
+				// 		setError(newError);
+				// 		console.log(error);
+				// 	}
+				// })
+
+				// try {
 				const res = await axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true });
 				if(props.edit) {
 					props.setEdit(null);
@@ -127,14 +128,17 @@ export default function AskQuestion(props) {
 					props.handleSortChange("newest");
 					props.handlePageSwap("home");
 				}
-				
-			} catch (err) {
-				// if (err.response && err.response.status === 403) {
-				// 	newError.qTags = err.response.data;
-				// 	setError(newError);
-				console.log(error);
+					
+				// } catch (err) {
+					// if (err.response && err.response.status === 403) {
+					// 	newError.qTags = err.response.data;
+					// 	setError(newError);
+					// console.log(error);
+					// }
 				// }
 			}
+		} catch(err) {
+			alert(err.message + ". Please press logout or refresh page!");
 		}
 	}
 
@@ -150,6 +154,7 @@ export default function AskQuestion(props) {
 			// props.handlePageSwap("home");
         } catch (err) {
             console.log(err);
+			alert(err.message + ". Please press logout or refresh page!");
         }
     }
 

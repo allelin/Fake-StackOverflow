@@ -46,8 +46,8 @@ export default function FakeStackOverflow() {
 	}
 
 	const handleQClicked = () => {
-		handlePageSwap("home");
 		handleSortChange("newest");
+		handlePageSwap("home");
 	}
 	
 	const handleTagClicked = () => {
@@ -76,6 +76,7 @@ export default function FakeStackOverflow() {
 			pageClass = <Login 
 			handlePageSwap={handlePageSwap}
 			setUser={setUser}
+			handleSortChange={handleSortChange}
 			/>
 			break;
 		default:

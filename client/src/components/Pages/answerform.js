@@ -71,7 +71,9 @@ export default function AnswerForm(props) {
 					props.handlePageSwap("profile");
 				}
                 
-            });
+            }).catch(err => {
+				alert(err.message + ". Please press logout or refresh page!");
+			});
         }
 
     }
@@ -85,6 +87,7 @@ export default function AnswerForm(props) {
 			props.handlePageSwap("profile");
         } catch (err) {
             console.log(err);
+			alert(err.message + ". Please press logout or refresh page!");
         }
     }
 

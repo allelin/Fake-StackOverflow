@@ -176,7 +176,7 @@ export default function Profile(props) {
                     <h2>My Questions</h2>
                     <ul>
                         {/* {props.user.questions */}
-						{props.userProfile.questions
+						{props.userProfile.questions.length > 0 ? props.userProfile.questions
                             .sort((a, b) => new Date(b.ask_date_time) - new Date(a.ask_date_time))
                             .map((question) => {
                                 return <li key={question._id}>
@@ -192,14 +192,14 @@ export default function Profile(props) {
                                         >Delete</div>
                                     </div>
                                 </li>
-                            })}
+                            }) : <h4>No Questions Found</h4>}
                     </ul>
                 </div>
                 <div className="profile-answers">
                     <h2>My Answers</h2>
                     <ul>
                         {/* {props.user.answers.map((answer) => { */}
-						{props.userProfile.answers.map((answer) => {
+						{props.userProfile.answers.length > 0 ? props.userProfile.answers.map((answer) => {
                             return <li key={answer._id}>
                                 <p>{answer.text}</p>
                                 <div>
@@ -211,12 +211,12 @@ export default function Profile(props) {
                                     >Delete</div>
                                 </div>
                             </li>
-                        })}
+                        }) : <h4>No Answers Found</h4>}
                     </ul>
                 </div>
                 <div className="profile-tags">
                     <h2>My Tags</h2>
-
+					{rows.length > 0 ?
                     <table id="tagsDiv">
                         <tbody>
                             {rows.map((row, rowIndex) => (
@@ -251,7 +251,7 @@ export default function Profile(props) {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table> : <h4>No Tags Found</h4>}
                 </div>
             </div>
             {/* {props.user.accType == "Admin" ? */}
@@ -259,7 +259,7 @@ export default function Profile(props) {
                 <div className='user-list'>
                     <h2>Users</h2>
                     <ul>
-                        {userList.map((user) => {
+                        {userList.length > 0 ? userList.map((user) => {
                             return <li key={user._id}>
                                 <div className='username'
 								onClick={() => props.setUserProfile(user)}
@@ -270,7 +270,7 @@ export default function Profile(props) {
                                     >Delete</div>
                                 </div>
                             </li>
-                        })}
+                        }) : <h4>No Users Found</h4>}
                     </ul>
                 </div> : <div></div>
             }

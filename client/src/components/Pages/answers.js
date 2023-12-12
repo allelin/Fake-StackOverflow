@@ -23,59 +23,63 @@ export default function Answers(props) {
 	}
 
 	const handleCommentSubmit = async (event, type, qid, aid, index) => {
-		event.preventDefault();
+		try {
+			event.preventDefault();
 
-		// console.log(index);
+			// console.log(index);
 
-		const formData = new FormData(event.target);
-		const cText = formData.get("commentText");
+			const formData = new FormData(event.target);
+			const cText = formData.get("commentText");
 
-		const newError = {
-			cText: '',
-		}
-		if(!cText) {
-			newError.cText = "Do not leave comment box empty!";
-		} else if(cText.length > 140) {
-			newError.cText = "More than 140 characters!";
-		} else {
-			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo/user`, { withCredentials: true })).data;
-			props.setUser(updatedAccInfo);
-			// console.log(updatedAccInfo);
-
-			if(updatedAccInfo.reputation < 50) {
-				newError.cText = "Insufficient reputation to make comment!";
+			const newError = {
+				cText: '',
 			}
-		}
+			if(!cText) {
+				newError.cText = "Do not leave comment box empty!";
+			} else if(cText.length > 140) {
+				newError.cText = "More than 140 characters!";
+			} else {
+				let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo/user`, { withCredentials: true })).data;
+				props.setUser(updatedAccInfo);
+				// console.log(updatedAccInfo);
 
-		if(!aid){
-			setError(newError);
-		} else {
-			updateError(index, newError);
-		}
-
-		if(Object.values(newError).every(field => field === '')) {
-			if(type === "question") {
-				axios.post(`http://localhost:8000/postcomment/${type}`, {qid: qid, text: cText}, { withCredentials: true })
-				.then(res => {
-					// console.log(res.data);
-					props.handleQuestionChange(res.data);
-					event.target.elements.commentText.value = '';
-				})
-				.catch(err => {
-					console.log(err);
-				})
-			} else if(type === "answer") {
-				// console.log(type);
-				axios.post(`http://localhost:8000/postcomment/${type}`, {qid: qid, aid: aid, text: cText}, { withCredentials: true })
-				.then(res => {
-					props.handleQuestionChange(res.data);
-					event.target.elements.commentText.value = '';
-				})
-				.catch(err => {
-					console.log(err);
-				})
+				if(updatedAccInfo.reputation < 50) {
+					newError.cText = "Insufficient reputation to make comment!";
+				}
 			}
-			
+
+			if(!aid){
+				setError(newError);
+			} else {
+				updateError(index, newError);
+			}
+
+			if(Object.values(newError).every(field => field === '')) {
+				if(type === "question") {
+					axios.post(`http://localhost:8000/postcomment/${type}`, {qid: qid, text: cText}, { withCredentials: true })
+					.then(res => {
+						// console.log(res.data);
+						props.handleQuestionChange(res.data);
+						event.target.elements.commentText.value = '';
+					})
+					.catch(err => {
+						console.log(err);
+					})
+				} else if(type === "answer") {
+					// console.log(type);
+					axios.post(`http://localhost:8000/postcomment/${type}`, {qid: qid, aid: aid, text: cText}, { withCredentials: true })
+					.then(res => {
+						props.handleQuestionChange(res.data);
+						event.target.elements.commentText.value = '';
+					})
+					.catch(err => {
+						console.log(err);
+					})
+				}
+				
+			}
+		} catch(err) {
+			alert(err.message + ". Please press logout or refresh page!");
 		}
 	}
 
@@ -152,7 +156,9 @@ export default function Answers(props) {
             });
             setAnswerHTMLList(ansHTMLList);
 			// console.log(answerHTMLList);
-        });
+        }).catch(err => {
+			alert(err.message + ". Please press logout or refresh page!");
+		});
 
 		// console.log(ansList);
 
@@ -290,21 +296,25 @@ export default function Answers(props) {
     const textHTML = displayLinkInText(question.text)
 
 	const handleVote = async (voteType, type, qid, aid, cid) => {
-		let question;
-		switch(type) {
-			case "question":
-				question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid}, { withCredentials: true })).data;
-				break;
-			case "answer":
-				question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid, aid: aid}, { withCredentials: true })).data;
-				// console.log(question);
-				break;
-			case "comment":
-				question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid, cid: cid}, { withCredentials: true })).data;
-				break;
+		try {
+			let question;
+			switch(type) {
+				case "question":
+					question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid}, { withCredentials: true })).data;
+					break;
+				case "answer":
+					question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid, aid: aid}, { withCredentials: true })).data;
+					// console.log(question);
+					break;
+				case "comment":
+					question = (await axios.post(`http://localhost:8000/${type}/${voteType}`, {qid: qid, cid: cid}, { withCredentials: true })).data;
+					break;
+			}
+			// console.log(question);
+			props.handleQuestionChange(question);
+		} catch(err) {
+			alert(err.message + ". Please press logout or refresh page!");
 		}
-		// console.log(question);
-		props.handleQuestionChange(question);
 	}
 
 	// console.log(question);

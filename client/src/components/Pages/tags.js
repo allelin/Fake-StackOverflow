@@ -33,6 +33,8 @@ export default function Tags(props) {
 			setRows(rows);
 			// console.log(rows);
 			setTags(tagsList);
+		}).catch(err => {
+			alert(err.message + ". Please press logout or refresh page!");
 		});
 	}, []);
 
@@ -44,7 +46,7 @@ export default function Tags(props) {
 				<button type="button" id="askbutton" 
 				onClick={() => props.handlePageSwap("askquestion")}>Ask Question</button>
 			</div>
-			<table id="tagsDiv">
+			{rows.length > 0 ? <table id="tagsDiv">
 				<tbody>
 					{rows.map((row, rowIndex) => (
 						<tr key={rowIndex}>
@@ -66,12 +68,12 @@ export default function Tags(props) {
 										</p>
 									</div>
 								</td>
-							// : <td></td>))
+							// : <td></td>))i
 							))}
 						</tr>
 					))}
 				</tbody>
-			</table>
+			</table> : <h2 id="noTText">No Tags Found</h2>}
 		</div>
 	);
 }
