@@ -5,11 +5,13 @@ import Tags from "../Pages/tags";
 import Answers from "../Pages/answers";
 import AnswerForm from "../Pages/answerform";
 import Profile from "../Pages/profile";
+import EditTag from "../Pages/edittag";
 
 
 export default function RightContent(props) {
 	const [question, setQuestion] = useState(null);
 	const [tag, setTag] = useState(null);
+	const [edit, setEdit] = useState(null);
 
 	const handleQuestionChange = (q) => {
 		setQuestion(q);
@@ -39,6 +41,8 @@ export default function RightContent(props) {
 			handleSortChange={props.handleSortChange}
 			user={props.user}
 			setUser={props.setUser}
+			edit={edit}
+			setEdit={setEdit}
 			/>
 			break;
 		case "tags":
@@ -62,6 +66,9 @@ export default function RightContent(props) {
 			handlePageSwap={props.handlePageSwap}
 			handleQuestionChange={handleQuestionChange}
 			user={props.user}
+			edit={edit}
+			setEdit={setEdit}
+			setUser={props.setUser}
 			/>;
 			break;
 		case "profile":
@@ -69,6 +76,18 @@ export default function RightContent(props) {
 			user={props.user}
 			setUser={props.setUser}
 			handlePageSwap={props.handlePageSwap}
+			setEdit={setEdit}
+			handleQuestionChange={handleQuestionChange}
+			handleTagFilterChange={handleTagFilterChange}
+			handleSortChange={props.handleSortChange}
+			/>
+			break;
+		case "edittag":
+			pageClass = <EditTag
+			edit={edit}
+			setEdit={setEdit}
+			handlePageSwap={props.handlePageSwap}
+
 			/>
 			break;
 		default:

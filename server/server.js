@@ -13,6 +13,7 @@ let Question = require('./models/questions');
 let Tag = require('./models/tags');
 let Account = require('./models/account');
 let Comment = require('./models/comment');
+const questions = require('./models/questions');
 
 //connect to MongoDB database
 mongoose.connect("mongodb://127.0.0.1:27017/fake_so", { useNewUrlParser: true, useUnifiedTopology: true });
@@ -225,21 +226,30 @@ app.post('/verifytags', (req, res) => {
 const getTags = function (req, res, next) {
 	const tagsArr = req.body.tags;
 
+	// console.log(tagsArr);
+
 	const promises = tagsArr.map(tagName => {
 		return Tag.findOne({ name: tagName })
-			.then(tag => {
+			.then(async (tag) => {
 				if (tag) {
 					return tag;
 				} else {
 					let newTag = new Tag({ name: tagName });
-					return newTag.save()
-						.then(newTag => {
-							return Account.findOne({ email: req.session.email })
-								.then(account => {
-									account.tags.push(newTag);
-									return account.save();
-								});
-						});
+					newTag = await newTag.save()
+					let acc = await Account.findOne({ email: req.session.email });
+					acc.tags.push(newTag);
+					acc = await acc.save();
+					return newTag;
+					// .then(newTag => {
+					// 	return Account.findOne({ email: req.session.email })
+					// 	.then(account => {
+					// 		account.tags.push(newTag);
+					// 		account.save()
+					// 		.then(account => {
+					// 			return newTag;
+					// 		});
+					// 	});
+					// });
 					// return Account.findOne({ email: req.body.email })
 					// .then(account => {
 					// 	if(account.reputation >= 50) {
@@ -265,6 +275,7 @@ const getTags = function (req, res, next) {
 	Promise.all(promises)
 		.then(tags => {
 			req.body.tags = tags;
+			// console.log(tags);
 			next();
 		})
 		// .then(results => {
@@ -295,22 +306,39 @@ const getTags = function (req, res, next) {
 
 app.use('/postquestion', getTags);
 
-app.post('/postquestion', (req, res) => {
-	// console.log(req.body);
-	// if(req.body.tagsProcessed) {
-	let newQuestion = Question({
-		title: req.body.title,
-		summary: req.body.summary,
-		text: req.body.text,
-		tags: req.body.tags,
-		asked_by: req.session.user,
-	});
+app.post('/postquestion', async (req, res) => {
+	let newQuestion;
+	if(!req.body.id) {
+		newQuestion = Question({
+			title: req.body.title,
+			summary: req.body.summary,
+			text: req.body.text,
+			tags: req.body.tags,
+			asked_by: req.session.user,
+		});
+	} else {
+		newQuestion = await Question.findById(req.body.id);
+		newQuestion.title = req.body.title;
+		newQuestion.summary = req.body.summary;
+		newQuestion.text = req.body.text;
+		newQuestion.tags = req.body.tags;
+	}
+	// console.log(req.body.tags);
+	
 
 	newQuestion.save()
 		.then(newQ => {
 			Account.findOne({ email: req.session.email })
 				.then(account => {
-					account.questions.push(newQ);
+					if(!req.body.id) {
+						account.questions.push(newQ);
+					} 
+					// else {
+					// 	// console.log(account.questions);
+					// 	let index = account.questions.findIndex(question => question._id == req.body.id);
+					// 	console.log(index);
+					// 	account.questions[index] = newQ;
+					// }
 					account.save()
 						.then(() => {
 							res.send(newQ);
@@ -318,7 +346,8 @@ app.post('/postquestion', (req, res) => {
 						.catch(err => console.error(err));
 				});
 		});
-	// }
+
+	// console.log(req.body.id);
 });
 
 
@@ -381,34 +410,47 @@ app.post(`/question/updateviews`, (req, res) => {
 		})
 });
 
-app.post(`/postanswer`, (req, res) => {
+app.post(`/postanswer`, async (req, res) => {
 	// console.log(req.session);
-	const newAnswer = Answer({
-		text: req.body.text,
-		ans_by: req.session.user,
-	});
+	let newAnswer;
+	if(!req.body.id) {
+		newAnswer = Answer({
+			text: req.body.text,
+			ans_by: req.session.user,
+		});
+	} else {
+		newAnswer = await Answer.findById(req.body.id);
+		newAnswer.text = req.body.text;
+	}
+	
 	newAnswer.save()
 		.then((newAns) => {
 			Account.findOne({ email: req.session.email })
-				.then(account => {
+			.then(account => {
+				if(!req.body.id) {
 					account.answers.push(newAns);
-					account.save()
-						.then(account => {
-							Question.findById(req.body.qid)
-								.then(question => {
-									question.answers.push(newAns._id);
-									question.save()
-										.then((question) => {
-											return Question.findById(question._id).populate('tags').populate('comments').exec();
-										})
-										.then(populatedQ => {
-											res.send(populatedQ);
-										})
-										.catch(err => console.error(err));
+				}
+				account.save()
+				.then(account => {
+					if(!req.body.id) {
+						Question.findById(req.body.qid)
+						.then(question => {
+							question.answers.push(newAns._id);
+							question.save()
+								.then((question) => {
+									return Question.findById(question._id).populate('tags').populate('comments').exec();
+								})
+								.then(populatedQ => {
+									res.send(populatedQ);
 								})
 								.catch(err => console.error(err));
 						})
-				});
+						.catch(err => console.error(err));
+					} else {
+						res.send("Answer Edited");
+					}
+				})
+			});
 		})
 });
 
@@ -826,6 +868,23 @@ app.post('/:type/:voteType', async (req, res) => {
 	} catch (err) {
 		console.error(err);
 	}
+});
+
+app.get('/getquestion/:qid', async (req, res) => {
+	try{
+		let question = await Question.findById(req.params.qid).populate("tags");
+		res.send(question);
+	} catch(err) {
+		console.err(err);
+	}
+});
+
+app.post('/updatetag', async (req, res) => {
+	// console.log(req.body.)
+	let tag = await Tag.findById(req.body.cid);
+	tag.name = req.body.tagName;
+	tag = await tag.save();
+	res.send(tag);
 });
 
 app.listen(port, () => {
