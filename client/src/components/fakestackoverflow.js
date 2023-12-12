@@ -62,6 +62,7 @@ export default function FakeStackOverflow() {
 		case "welcome":
 			pageClass = <Welcome
 			handlePageSwap={handlePageSwap}
+			handleSortChange={handleSortChange}
 			setUser={setUser}
 			/>
 			break;

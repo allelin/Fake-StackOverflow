@@ -8,6 +8,7 @@ export default function Welcome(props) {
 			if(res.data){
 				// console.log(res.data);
 				props.setUser(res.data);
+				props.handleSortChange("newest");
 				props.handlePageSwap("home");
 			}
 		});
@@ -19,7 +20,10 @@ export default function Welcome(props) {
 			<div className="welcome-buttons">
 				<button className="welcome-login" onClick={() => props.handlePageSwap("login")}>Login</button>
 				<button className="welcome-signup" onClick={() => props.handlePageSwap("signup")}>Sign Up</button>
-				<button className="welcome-guest" onClick={() => props.handlePageSwap("home")}>Continue as Guest</button>
+				<button className="welcome-guest" onClick={() => {
+					props.handleSortChange("newest");
+					props.handlePageSwap("home");}
+				} >Continue as Guest</button>
 			</div>
 		</div>
 	)

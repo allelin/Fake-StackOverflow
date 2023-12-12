@@ -32,7 +32,7 @@ export default function Signup(props) {
 			} else if(!emailRegex.test(email)) {
 				newError.email = "Invalid email form!";
 			} else {
-				const emailExist = (await axios.get(`http://localhost:8000/account/${email}`), { withCredentials: true }).data;
+				const emailExist = (await axios.get(`http://localhost:8000/account/${email}`, { withCredentials: true })).data;
 				if(emailExist) {
 					newError.email = "Email exist already!";
 				}
@@ -53,7 +53,7 @@ export default function Signup(props) {
 			} else if(retype != password) {
 				newError.retype = "Retyped password does not match!"
 			}
-
+			// console.log(newError);
 			setError(newError);
 
 			if(Object.values(newError).every(field => field === '')) {
