@@ -16,6 +16,7 @@ export default function Home(props) {
 			props.handlePageSwap("answers");
 		} catch (err) {
 			console.log(err);
+			alert(err.message + ". Please press logout or refresh page!");
 		}
 	}
 
@@ -42,6 +43,9 @@ export default function Home(props) {
 					/>
 				));
 				setQuestionHTMLList(questionList);
+			})
+			.catch(err => {
+				alert(err.message + ". Please press logout or refresh page!");
 			});
 		}
 	}, [props.sort]);
@@ -60,6 +64,8 @@ export default function Home(props) {
 						/>
 					));
 				setQuestionHTMLList(questionList);
+			}).catch(err => {
+				alert(err.message + ". Please press logout or refresh page!");
 			});
 		}
 	}, [props.search]);
@@ -78,6 +84,8 @@ export default function Home(props) {
 						/>
 					));
 				setQuestionHTMLList(questionList);
+			}).catch(err => {
+				alert(err.message + ". Please press logout or refresh page!");
 			});
 		}
 	}, [props.tag]);

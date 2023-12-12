@@ -455,6 +455,10 @@ button, #post_question_button, #post_answer_button, #edit_tag_button, .comment_b
 	padding: 30px;
 }
 
+#noTText {
+	padding: 30px;
+}
+
 .welcome-container {
 	text-align: center;
 	/* margin-top: 15%; */

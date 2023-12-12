@@ -36,6 +36,7 @@ export default function Login(props) {
                 if(res.data) {
                     props.setUser(res.data);
 					// console.log(res.data.username);
+					props.handleSortChange("newest");
                     props.handlePageSwap("home");
                 } else {
                     setError({ email: "Email or password is incorrect!", password: "Email or password is incorrect!" });

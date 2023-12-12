@@ -33,6 +33,7 @@ export default function EditTag(props) {
 			
 		} catch(err) {
 			console.log(err);
+			alert(err.message + ". Please press logout or refresh page!");
 		}
 	}
 
@@ -61,6 +62,7 @@ export default function EditTag(props) {
             
         } catch (err) {
             console.log(err);
+			alert(err.message + ". Please press logout or refresh page!");
         }
     }
 

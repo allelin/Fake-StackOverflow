@@ -8,7 +8,9 @@ export default function LeftNav(props) {
 			props.handlePageSwap("welcome");
 		} catch(err) {
 			console.log(err);
-			alert("Logged out failed!");
+			alert(err.message + ". Please press logout or refresh page!");
+			props.setUser(null);
+			props.handlePageSwap("welcome");
 		}
 	}
 		
