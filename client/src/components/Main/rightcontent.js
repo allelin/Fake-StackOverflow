@@ -87,6 +87,7 @@ export default function RightContent(props) {
 			edit={edit}
 			setEdit={setEdit}
 			handlePageSwap={props.handlePageSwap}
+
 			/>
 			break;
 		default:
