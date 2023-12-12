@@ -30,7 +30,22 @@ export default function Profile(props) {
     }
 
     const handleTagDelete = async (tid, index) => {
-        
+
+    }
+
+    const handleUserDelete = async (uid) => {
+        try {
+            const respond = await axios.get(`http://localhost:8000/deleteuser/${uid}`, { withCredentials: true });
+            console.log(respond.data);
+            setUserList(respond.data);
+            if (!respond.data.some(user => user.email === props.user.email)) {
+                let logout = await axios.get(`http://localhost:8000/logout`, { withCredentials: true });
+                props.setUser(null);
+                props.handlePageSwap("welcome");
+            }
+        } catch (err) {
+            console.log(err);
+        }
     }
     useEffect(() => {
         axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })
@@ -196,7 +211,7 @@ export default function Profile(props) {
                                 <div>{user.username}</div>
                                 <div>
                                     <div className="delete-button"
-                                    // onClick={() => props.handleQuestionDelete(question._id)}
+                                        onClick={() => handleUserDelete(user._id)}
                                     >Delete</div>
                                 </div>
                             </li>
