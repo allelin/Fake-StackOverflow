@@ -68,6 +68,7 @@ export default function RightContent(props) {
 			pageClass = <Profile
 			user={props.user}
 			setUser={props.setUser}
+			handlePageSwap={props.handlePageSwap}
 			/>
 			break;
 		default:

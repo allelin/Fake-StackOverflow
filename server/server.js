@@ -200,25 +200,25 @@ app.post('/verifytags', (req, res) => {
 	let tags = [];
 	// console.log(req.body.tags);
 	const promises = req.body.tags.map(tagName => {
-		return Tag.findOne({ name: tagName})
-		.then(tag => {
-			if(tag) {
-				tags.push(tag);
-			}
-			return tag;
-		})
-		.catch(err => {
-			console.error(err);
-		})
+		return Tag.findOne({ name: tagName })
+			.then(tag => {
+				if (tag) {
+					tags.push(tag);
+				}
+				return tag;
+			})
+			.catch(err => {
+				console.error(err);
+			})
 	});
 
 	Promise.all(promises)
-	.then(() => {
-		res.send(tags);
-	}).catch(err => {
-		console.error(err);
-		// res.status(500).send('Internal Server Error');
-	});
+		.then(() => {
+			res.send(tags);
+		}).catch(err => {
+			console.error(err);
+			// res.status(500).send('Internal Server Error');
+		});
 });
 
 //middleware get all tags
@@ -233,13 +233,13 @@ const getTags = function (req, res, next) {
 				} else {
 					let newTag = new Tag({ name: tagName });
 					return newTag.save()
-					.then(newTag => {
-						return Account.findOne({ email: req.session.email })
-						.then(account => {
-							account.tags.push(newTag);
-							return account.save();
+						.then(newTag => {
+							return Account.findOne({ email: req.session.email })
+								.then(account => {
+									account.tags.push(newTag);
+									return account.save();
+								});
 						});
-					});
 					// return Account.findOne({ email: req.body.email })
 					// .then(account => {
 					// 	if(account.reputation >= 50) {
@@ -271,7 +271,7 @@ const getTags = function (req, res, next) {
 		// 	// Check if any promises were rejected
 		// 	// const errors = results.filter(result => result.status === 'rejected');
 		// 	console.log(results);
-	  
+
 		// 	// if (errors.length > 0) {
 		// 	//   // If there are errors, prevent the creation of a new question
 		// 	//   res.status(403).send("Question creation failed. Insufficient reputation to create a new tag.");
@@ -355,18 +355,18 @@ app.get('/tags', async (req, res) => {
 
 app.get('/answer/:id', (req, res) => {
 	Answer.findById(req.params.id)
-	.populate('comments')
-	.exec()
-	.then(answer => {
-		res.send(answer);
-	})
-	.catch(err => console.error(err));
+		.populate('comments')
+		.exec()
+		.then(answer => {
+			res.send(answer);
+		})
+		.catch(err => console.error(err));
 });
 
 app.post(`/question/updateviews`, (req, res) => {
 	Question.findById(req.body.id)
-	.populate("tags")
-	.exec()
+		.populate("tags")
+		.exec()
 		.then(question => {
 			question.views += 1;
 			question.save()
@@ -390,25 +390,25 @@ app.post(`/postanswer`, (req, res) => {
 	newAnswer.save()
 		.then((newAns) => {
 			Account.findOne({ email: req.session.email })
-			.then(account => {
-				account.answers.push(newAns);
-				account.save()
 				.then(account => {
-					Question.findById(req.body.qid)
-					.then(question => {
-						question.answers.push(newAns._id);
-						question.save()
-							.then((question) => {
-								return Question.findById(question._id).populate('tags').populate('comments').exec();
-							})
-							.then(populatedQ => {
-								res.send(populatedQ);
-							})
-							.catch(err => console.error(err));
-					})
-					.catch(err => console.error(err));
-				})
-			});
+					account.answers.push(newAns);
+					account.save()
+						.then(account => {
+							Question.findById(req.body.qid)
+								.then(question => {
+									question.answers.push(newAns._id);
+									question.save()
+										.then((question) => {
+											return Question.findById(question._id).populate('tags').populate('comments').exec();
+										})
+										.then(populatedQ => {
+											res.send(populatedQ);
+										})
+										.catch(err => console.error(err));
+								})
+								.catch(err => console.error(err));
+						})
+				});
 		})
 });
 
@@ -440,10 +440,10 @@ app.post('/postaccount', async (req, res) => {
 
 app.get('/login/:email/:password', (req, res) => {
 	Account.findOne({ email: req.params.email })
-	.populate("questions")
-	.populate("answers")
-	.populate("tags")
-	.exec()
+		.populate("questions")
+		.populate("answers")
+		.populate("tags")
+		.exec()
 		.then(account => {
 			if (account) {
 				bcrypt.compare(req.params.password, account.passwordHash)
@@ -505,27 +505,27 @@ app.post("/postcomment/question", (req, res) => {
 		comment_by: req.session.user,
 	});
 	newComment.save()
-	.then(newCom => {
-		Account.findOne({ email: req.session.email })
-		.then(account => {
-			account.comments.push(newCom);
-			account.save()
-			.then(account => {
-				Question.findById(req.body.qid)
-				.then(question => {
-					question.comments.push(newCom);
-					question.save()
-					.then(question => {
-						return Question.findById(question._id).populate('tags').populate('comments').exec();
-					})
-					.then(populatedQ => {
-						res.send(populatedQ);
-					})
+		.then(newCom => {
+			Account.findOne({ email: req.session.email })
+				.then(account => {
+					account.comments.push(newCom);
+					account.save()
+						.then(account => {
+							Question.findById(req.body.qid)
+								.then(question => {
+									question.comments.push(newCom);
+									question.save()
+										.then(question => {
+											return Question.findById(question._id).populate('tags').populate('comments').exec();
+										})
+										.then(populatedQ => {
+											res.send(populatedQ);
+										})
+								})
+						})
 				})
-			})
 		})
-	})
-	.catch(err => console.error(err));
+		.catch(err => console.error(err));
 });
 
 app.post("/postcomment/answer", (req, res) => {
@@ -535,27 +535,27 @@ app.post("/postcomment/answer", (req, res) => {
 	});
 	// console.log(req.session);
 	newComment.save()
-	.then(newCom => {
-		Account.findOne({ email: req.session.email })
-		.then(account => {
-			account.comments.push(newCom);
-			account.save()
-			.then(account => {
-				Answer.findById(req.body.aid)
-				.then(answer => {
-					answer.comments.push(newCom);
-					answer.save()
-					.then(answer => {
-						Question.findById(req.body.qid).populate('tags').populate('comments').exec()
-						.then(question => {
-							res.send(question);
+		.then(newCom => {
+			Account.findOne({ email: req.session.email })
+				.then(account => {
+					account.comments.push(newCom);
+					account.save()
+						.then(account => {
+							Answer.findById(req.body.aid)
+								.then(answer => {
+									answer.comments.push(newCom);
+									answer.save()
+										.then(answer => {
+											Question.findById(req.body.qid).populate('tags').populate('comments').exec()
+												.then(question => {
+													res.send(question);
+												})
+										})
+								})
 						})
-					})
 				})
-			})
 		})
-	})
-	.catch(err => console.error(err));
+		.catch(err => console.error(err));
 });
 
 app.get(`/accountinfo`, (req, res) => {
@@ -589,33 +589,33 @@ app.get('/deletequestion/:id', async (req, res) => {
 		account = await account.save();
 	}
 	for (let i = 0; i < question.answers.length; i++) {
-	// question.answers.map(async (aid) => {
+		// question.answers.map(async (aid) => {
 		let ans = await Answer.findByIdAndDelete(question.answers[i]);
 		let acc = await Account.updateOne(
-			{ answers: question.answers[i] }, 
-			{ $pull: { answers: question.answers[i] } } 
-		  );
+			{ answers: question.answers[i] },
+			{ $pull: { answers: question.answers[i] } }
+		);
 		for (let j = 0; j < ans.comments.length; j++) {
 			let com = await Comment.findByIdAndDelete(ans.comments[j]);
 			let acc = await Account.updateOne(
-				{ comments: ans.comments[j] }, 
-				{ $pull: { comments: ans.comments[j] } } 
-			  );
+				{ comments: ans.comments[j] },
+				{ $pull: { comments: ans.comments[j] } }
+			);
 		}
 	}
 	for (let i = 0; i < question.comments.length; i++) {
-	// question.comments.map(async (cid) => {
-		let com = await Comment.findByIdAndDelete(cid);
+		// question.comments.map(async (cid) => {
+		let com = await Comment.findByIdAndDelete(question.comments[i]);
 		let acc = await Account.updateOne(
-			{ comments: cid }, 
-			{ $pull: { comments: cid } } 
-		  );	
+			{ comments: question.comments[i] },
+			{ $pull: { comments: question.comments[i] } }
+		);
 	}
 	let updatedAcc = await Account.findOne({ email: req.session.email })
-	.populate("questions")
-	.populate("answers")
-	.populate("tags")
-	.exec()
+		.populate("questions")
+		.populate("answers")
+		.populate("tags")
+		.exec()
 	res.send(updatedAcc);
 
 });
@@ -630,22 +630,73 @@ app.get('/deleteanswer/:id', async (req, res) => {
 		account = await account.save();
 	}
 	let question = await Question.updateOne(
-		{ answers: aid }, 
-		{ $pull: { answers: aid } } 
-	  );
+		{ answers: aid },
+		{ $pull: { answers: aid } }
+	);
 	for (let i = 0; i < answer.comments.length; i++) {
 		let com = await Comment.findByIdAndDelete(answer.comments[i]);
 		let acc = await Account.updateOne(
-			{ comments: answer.comments[i] }, 
-			{ $pull: { comments: answer.comments[i] } } 
-		  );
+			{ comments: answer.comments[i] },
+			{ $pull: { comments: answer.comments[i] } }
+		);
 	}
 	let updatedAcc = await Account.findOne({ email: req.session.email })
-	.populate("questions")
-	.populate("answers")
-	.populate("tags")
-	.exec()
+		.populate("questions")
+		.populate("answers")
+		.populate("tags")
+		.exec()
 	res.send(updatedAcc);
+});
+
+app.get(`/deleteuser/:id`, async (req, res) => {
+	const uid = req.params.id;
+	const user = await Account.findByIdAndDelete(uid);
+	for (let i = 0; i < user.questions.length; i++) {
+		let question = await Question.findByIdAndDelete(user.questions[i]);
+		for (let j = 0; j < question.answers.length; j++) {
+			let answer = await Answer.findByIdAndDelete(question.answers[j]);
+			for (let k = 0; k < answer.comments.length; k++) {
+				let com = await Comment.findByIdAndDelete(answer.comments[k]);
+			}
+		}
+		for (let j = 0; j < question.comments.length; j++) {
+			let com = await Comment.findByIdAndDelete(question.comments[j]);
+		}
+	}
+	for (let i = 0; i < user.answers.length; i++) {
+		let answer = await Answer.findByIdAndDelete(user.answers[i]);
+		console.log(answer);
+		if (answer) {
+			for (let j = 0; j < answer.comments.length; j++) {
+				let com = await Comment.findByIdAndDelete(answer.comments[j]);
+			}
+			let question = await Question.updateOne(
+				{ answers: user.answers[i] },
+				{ $pull: { answers: user.answers[i] } }
+			);
+		}
+	}
+	for (let i = 0; i < user.comments.length; i++) {
+		let com = await Comment.findByIdAndDelete(user.comments[i]);
+		// Pull from questions
+		if (com) {
+			let question = await Question.updateOne(
+				{ comments: user.comments[i] },
+				{ $pull: { comments: user.comments[i] } }
+			);
+			let answer = await Answer.updateOne(
+				{ comments: user.comments[i] },
+				{ $pull: { comments: user.comments[i] } }
+			);
+		}
+		// Pull from answers
+
+
+	}
+	let userList = await Account.find()
+		.exec()
+	res.send(userList);
+
 });
 
 app.post('/:type/:voteType', async (req, res) => {
@@ -655,27 +706,27 @@ app.post('/:type/:voteType', async (req, res) => {
 		// console.log(user);
 		// console.log(req.session);
 		let accData;
-		switch(req.params.type) {
+		switch (req.params.type) {
 			case "question":
 				question = await Question.findById(req.body.qid).populate({
 					path: "voted_by.account",
 					model: "Account"
-				  });
+				});
 				// console.log(question.voted_by);
 				accData = question.voted_by.find(user => user.account.email == req.session.email);
 				// console.log(accData);
-				switch(req.params.voteType) {
+				switch (req.params.voteType) {
 					case "upvote":
 						// if(!question.voted_by.find(user => user.email == req.session.email)) {
-						if(!accData) {
+						if (!accData) {
 							question.votes += 1;
-							question.voted_by.push({account: user, vote: 1});
+							question.voted_by.push({ account: user, vote: 1 });
 							question = await question.save();
 
 							let asked_by = await Account.findOne({ username: question.asked_by });
 							asked_by.reputation += 5;
 							asked_by = await asked_by.save();
-						} else if(accData.vote == -1) {
+						} else if (accData.vote == -1) {
 							question.votes += 1;
 							question.voted_by.pull(accData._id);
 							question = await question.save();
@@ -686,15 +737,15 @@ app.post('/:type/:voteType', async (req, res) => {
 						}
 						break;
 					case "downvote":
-						if(!accData) {
+						if (!accData) {
 							question.votes -= 1;
-							question.voted_by.push({account: user, vote: -1});
+							question.voted_by.push({ account: user, vote: -1 });
 							question = await question.save();
 
 							let asked_by = await Account.findOne({ username: question.asked_by });
 							asked_by.reputation -= 10;
 							asked_by = await asked_by.save();
-						} else if(accData.vote == 1) {
+						} else if (accData.vote == 1) {
 							question.votes -= 1;
 							question.voted_by.pull(accData._id);
 							question = await question.save();
@@ -710,19 +761,19 @@ app.post('/:type/:voteType', async (req, res) => {
 				let answer = await Answer.findById(req.body.aid).populate({
 					path: "voted_by.account",
 					model: "Account"
-				  });
+				});
 				accData = answer.voted_by.find(user => user.account.email == req.session.email);
-				switch(req.params.voteType) {
+				switch (req.params.voteType) {
 					case "upvote":
-						if(!accData) {
+						if (!accData) {
 							answer.votes += 1;
-							answer.voted_by.push({account: user, vote: 1});
+							answer.voted_by.push({ account: user, vote: 1 });
 							answer = await answer.save();
 
 							let ans_by = await Account.findOne({ username: answer.ans_by });
 							ans_by.reputation += 5;
 							ans_by = await ans_by.save();
-						}  else if(accData.vote == -1) {
+						} else if (accData.vote == -1) {
 							answer.votes += 1;
 							answer.voted_by.pull(accData._id);
 							answer = await answer.save();
@@ -733,15 +784,15 @@ app.post('/:type/:voteType', async (req, res) => {
 						}
 						break;
 					case "downvote":
-						if(!accData) {
+						if (!accData) {
 							answer.votes -= 1;
-							answer.voted_by.push({account: user, vote: -1});
+							answer.voted_by.push({ account: user, vote: -1 });
 							answer = await answer.save();
 
 							let ans_by = await Account.findOne({ username: answer.ans_by });
 							ans_by.reputation -= 10;
 							ans_by = await ans_by.save();
-						}  else if(accData.vote == 1) {
+						} else if (accData.vote == 1) {
 							answer.votes -= 1;
 							answer.voted_by.pull(accData._id);
 							answer = await answer.save();
@@ -757,13 +808,13 @@ app.post('/:type/:voteType', async (req, res) => {
 				let comment = await Comment.findById(req.body.cid).populate({
 					path: "voted_by.account",
 					model: "Account"
-				  });
-				
+				});
+
 				accData = comment.voted_by.find(user => user.account.email == req.session.email);
 
-				if(!accData) {
+				if (!accData) {
 					comment.votes += 1;
-					comment.voted_by.push({account: user, vote: 1});
+					comment.voted_by.push({ account: user, vote: 1 });
 					comment = await comment.save();
 				}
 
@@ -772,7 +823,7 @@ app.post('/:type/:voteType', async (req, res) => {
 
 		question = await Question.findById(req.body.qid).populate('tags').populate('comments').exec();
 		res.send(question);
-	} catch(err) {
+	} catch (err) {
 		console.error(err);
 	}
 });
