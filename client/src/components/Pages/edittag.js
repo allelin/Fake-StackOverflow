@@ -52,7 +52,7 @@ export default function EditTag(props) {
 		try {
             const respond = await axios.post(`http://localhost:8000/deletetag/${tid}`, {email: props.userProfile.email, user: props.userProfile.username}, { withCredentials: true });
 			if(!respond.data) {
-				alert("Cannot detele tag because it is used by other users!");
+				alert("Cannot delete tag because it is used by other users!");
 			} else {
 				// props.setUser(respond.data);
 				props.setEdit(null);
