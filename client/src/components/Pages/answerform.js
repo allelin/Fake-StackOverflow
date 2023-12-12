@@ -47,7 +47,8 @@ export default function AnswerForm(props) {
 			if(props.edit) {
 				newAnswer = {
 					text: aText,
-					id: props.edit._id
+					id: props.edit._id,
+					email: props.userProfile.email
 				};
 			} else {
 				newAnswer = {
@@ -79,7 +80,7 @@ export default function AnswerForm(props) {
         try {
             const respond = await axios.get(`http://localhost:8000/deleteanswer/${aid}`, { withCredentials: true });
             // console.log(respond.data);
-            props.setUser(respond.data);
+            // props.setUser(respond.data);
 			props.setEdit(null);
 			props.handlePageSwap("profile");
         } catch (err) {

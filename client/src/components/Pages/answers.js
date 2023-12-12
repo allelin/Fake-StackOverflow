@@ -38,13 +38,13 @@ export default function Answers(props) {
 		} else if(cText.length > 140) {
 			newError.cText = "More than 140 characters!";
 		} else {
-			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })).data;
+			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo/user`, { withCredentials: true })).data;
 			props.setUser(updatedAccInfo);
 			// console.log(updatedAccInfo);
 
-			// if(updatedAccInfo.reputation < 50) {
-			// 	newError.cText = "Insufficient reputation to make comment!";
-			// }
+			if(updatedAccInfo.reputation < 50) {
+				newError.cText = "Insufficient reputation to make comment!";
+			}
 		}
 
 		if(!aid){
@@ -349,7 +349,7 @@ export default function Answers(props) {
 			<div className="commentbox">
 				{commentHTMLList.slice(cStart, cStart + 3)}
 			</div>
-			{props.user ? props.user.reputation >= 50 ? <div className="commentbox">
+			{props.user ? <div className="commentbox">
 				<form className="commentForm" onSubmit={(event) => handleCommentSubmit(event, "question", question._id, false)}>
 					<textarea 
 					name="commentText" 
@@ -365,7 +365,7 @@ export default function Answers(props) {
 					{error.cText && <div className="error-message">{error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
 				</form>
-			</div> : <></> : <></>}
+			</div> : <></>}
 			<div className="navigateElements">
 				{cStart > 0 ? <button type="button"
 				onClick={() => changeCStart(-3)}
@@ -435,7 +435,7 @@ function AnsComponent(props) {
 			<div className="commentbox">
 				{newCommentHTML.slice(props.counter, props.counter + 3)}
 			</div>
-			{props.user ? props.user.reputation >= 50 ? <div className="commentbox">
+			{props.user ? <div className="commentbox">
 				<form className="commentForm" onSubmit={(event) => props.handleCommentSubmit(event, "answer", props.question._id, ans._id)}>
 					<textarea 
 					name="commentText" 
@@ -451,7 +451,7 @@ function AnsComponent(props) {
 					{props.error.cText && <div className="error-message">{props.error.cText}</div>}
 					<input className="comment_button" type="submit" value="Post Comment"/>
 				</form>
-			</div> : <></> : <></>}
+			</div> : <></>}
 			<div className="navigateElements">
 				{props.counter > 0 ? <button type="button"
 				onClick={() => props.onUpdateCounter(-3)}

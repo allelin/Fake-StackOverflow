@@ -14,6 +14,7 @@ export default function FakeStackOverflow() {
 	const [TagClicked, setTagClicked] = useState(false);
 	const [search, setSearch] = useState([]);
 	const [user, setUser] = useState(null);
+	const [userProfile, setUserProfile] = useState(null);
 
 	const handlePageSwap = (page) => {
 		if(page === "home") {
@@ -84,7 +85,8 @@ export default function FakeStackOverflow() {
 			handleSearch={handleSearch} 
 			handleSortChange={handleSortChange} 
 			handlePageSwap={handlePageSwap}
-			user={user}/>
+			user={user}
+			setUserProfile={setUserProfile}/>
 			<div id="main">
 				<LeftNav 
 				QClicked={QClicked}
@@ -104,6 +106,8 @@ export default function FakeStackOverflow() {
 				TopBarLabel={TopBarLabel}
 				setUser={setUser}
 				user={user}
+				userProfile={userProfile}
+				setUserProfile={setUserProfile}
 				/>
 			</div>
 		</div>;

@@ -74,7 +74,7 @@ export default function AskQuestion(props) {
 			newError.qTags = "Not all tags are of max length of 10!";
 		} else {
 			let res = await axios.post(`http://localhost:8000/verifytags`, {tags: tagArr}, { withCredentials: true });
-			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })).data;
+			let updatedAccInfo = (await axios.get(`http://localhost:8000/accountinfo/user`, { withCredentials: true })).data;
 			props.setUser(updatedAccInfo);
 			// console.log(res);
 			if(res.data.length != tagArr.length && updatedAccInfo.reputation < 50) {
@@ -87,8 +87,10 @@ export default function AskQuestion(props) {
 
 		if(Object.values(newError).every(field => field === '')) {
 			let id = null;
+			let email = null;
 			if(props.edit) {
 				id = props.edit._id;
+				email = props.userProfile.email;
 			}
 			const newQuestion = {
 				title: qTitle,
@@ -97,7 +99,8 @@ export default function AskQuestion(props) {
 				tags: tagArr,
 				// username: props.user.username,
 				// email: props.user.email
-				id: id
+				id: id,
+				email: email
 			}
 
 			// axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true })
@@ -139,7 +142,8 @@ export default function AskQuestion(props) {
         try {
             const respond = await axios.get(`http://localhost:8000/deletequestion/${qid}`, { withCredentials: true });
             // console.log(respond.data);
-            props.setUser(respond.data);
+            // props.setUser(respond.data);
+			// props.set
 			props.setEdit(null);
 			props.handlePageSwap("profile");
 			// props.handleSortChange("newest");
