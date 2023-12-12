@@ -119,9 +119,12 @@ export default function AskQuestion(props) {
 				const res = await axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true });
 				if(props.edit) {
 					props.setEdit(null);
+					props.handlePageSwap("profile");
+				} else {
+					props.handleSortChange("newest");
+					props.handlePageSwap("home");
 				}
-				props.handleSortChange("newest");
-				props.handlePageSwap("home");
+				
 			} catch (err) {
 				// if (err.response && err.response.status === 403) {
 				// 	newError.qTags = err.response.data;
@@ -138,8 +141,9 @@ export default function AskQuestion(props) {
             // console.log(respond.data);
             props.setUser(respond.data);
 			props.setEdit(null);
-			props.handleSortChange("newest");
-			props.handlePageSwap("home");
+			props.handlePageSwap("profile");
+			// props.handleSortChange("newest");
+			// props.handlePageSwap("home");
         } catch (err) {
             console.log(err);
         }
