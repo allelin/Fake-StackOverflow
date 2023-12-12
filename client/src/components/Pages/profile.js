@@ -12,7 +12,7 @@ export default function Profile(props) {
     const handleQuestionDelete = async (qid) => {
         try {
             const respond = await axios.get(`http://localhost:8000/deletequestion/${qid}`, { withCredentials: true });
-            console.log(respond.data);
+            // console.log(respond.data);
             props.setUser(respond.data);
         } catch (err) {
             console.log(err);
@@ -22,7 +22,7 @@ export default function Profile(props) {
     const handleAnswerDelete = async (aid) => {
         try {
             const respond = await axios.get(`http://localhost:8000/deleteanswer/${aid}`, { withCredentials: true });
-            console.log(respond.data);
+            // console.log(respond.data);
             props.setUser(respond.data);
         } catch (err) {
             console.log(err);
@@ -32,10 +32,57 @@ export default function Profile(props) {
     const handleTagDelete = async (tid, index) => {
         
     }
+
+	const handleQuestionEdit = async (question) => {
+		try {
+			// console.log(question);
+			// console.log(props.user);
+			let q = (await axios.get(`http://localhost:8000/getquestion/${question._id}`, { withCredentials: true })).data;
+			props.setEdit(q);
+			props.handlePageSwap("askquestion");
+		} catch(err) {
+			console.log(err);
+		}
+	}
+
+	const handleAnswerEdit = async (answer) => {
+		try {
+			// let q = (await axios.get(`http://localhost:8000/getanswer/${answer._id}`, { withCredentials: true })).data;
+			props.setEdit(answer);
+			props.handlePageSwap("answerform");
+		} catch(err) {
+			console.log(err);
+		}
+	}
+
+	const handleTagEdit = async (tag) => {
+		try {
+			props.setEdit(tag);
+			props.handlePageSwap("edittag");
+		} catch(err) {
+			console.log(err);
+		}
+	}
+
+	const handleAnswer = async (question) => {
+		const qid = {
+			id: question._id
+		}
+
+		try {
+			const respond = await axios.post(`http://localhost:8000/question/updateviews`, qid, { withCredentials: true });
+			props.handleQuestionChange(respond.data);
+			props.handlePageSwap("answers");
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
     useEffect(() => {
         axios.get(`http://localhost:8000/accountinfo`, { withCredentials: true })
             .then(res => {
                 const userData = res.data;
+				// console.log(userData);
                 props.setUser(userData);
             });
         axios.get(`http://localhost:8000/getallaccounts`, { withCredentials: true })
@@ -85,15 +132,16 @@ export default function Profile(props) {
                 <div className="profile-questions">
                     <h2>My Questions</h2>
                     <ul>
-                        {/* {props.user.questions.slice().reverse().map((question) => { */}
                         {props.user.questions
                             .sort((a, b) => new Date(b.ask_date_time) - new Date(a.ask_date_time))
                             .map((question) => {
                                 return <li key={question._id}>
-                                    <p>{question.title}</p>
+                                    <div className="qName"
+									onClick={() => handleAnswer(question)}
+									>{question.title}</div>
                                     <div>
                                         <div className="edit-button"
-                                        // onClick={() => props.handleQuestionChange()}
+                                        onClick={() => handleQuestionEdit(question)}
                                         >Edit</div>
                                         <div className="delete-button"
                                             onClick={() => handleQuestionDelete(question._id)}
@@ -111,7 +159,7 @@ export default function Profile(props) {
                                 <p>{answer.text}</p>
                                 <div>
                                     <div className="edit-button"
-                                    // onClick={() => props.handleQuestionChange()}
+                                    onClick={() => handleAnswerEdit(answer)}
                                     >Edit</div>
                                     <div className="delete-button"
                                         onClick={() => handleAnswerDelete(answer._id)}
@@ -152,7 +200,7 @@ export default function Profile(props) {
                                                 </p>
                                                 <div>
                                                     <div className="edit-button"
-                                                    // onClick={() => props.handleQuestionChange()}
+                                                    onClick={() => handleTagEdit(tag.tag)}
                                                     >Edit</div>
                                                     <div className="delete-button"
                                                     // onClick={() => handleTagDelete(tag.tag._id, tag.count)}

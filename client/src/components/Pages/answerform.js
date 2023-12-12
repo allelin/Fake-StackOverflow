@@ -43,26 +43,53 @@ export default function AnswerForm(props) {
 		// console.log("hi");
 
         if (newError.aText === "") {
-            const newAnswer = {
-                text: aText,
-                // ans_by: props.user.username,
-                qid: props.question._id,
-				// email: props.user,email
-            };
+			let newAnswer;
+			if(props.edit) {
+				newAnswer = {
+					text: aText,
+					id: props.edit._id
+				};
+			} else {
+				newAnswer = {
+					text: aText,
+					// ans_by: props.user.username,
+					qid: props.question._id,
+					// email: props.user,email
+				};
+			}
+            
 			// console.log("hi");
             axios.post(`http://localhost:8000/postanswer`, newAnswer, { withCredentials: true })
             .then (res => {
                 // console.log(res.data);
-                props.handleQuestionChange(res.data);
-                props.handlePageSwap("answers");
+				if(!props.edit) {
+					props.handleQuestionChange(res.data);
+                	props.handlePageSwap("answers");
+				} else {
+					props.setEdit(null);
+					props.handlePageSwap("profile");
+				}
+                
             });
         }
 
     }
 
+	const handleAnswerDelete = async (aid) => {
+        try {
+            const respond = await axios.get(`http://localhost:8000/deleteanswer/${aid}`, { withCredentials: true });
+            // console.log(respond.data);
+            props.setUser(respond.data);
+			props.setEdit(null);
+			props.handlePageSwap("profile");
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
         <div id="right_bar">
-            <form id="newAnswerForm"
+            {!props.edit ? <form id="newAnswerForm"
             onSubmit={handleSubmit}
             >
                 {/* <h2>Username*</h2>
@@ -81,7 +108,24 @@ export default function AnswerForm(props) {
                     <input id="post_answer_button" type="submit" value="Post Answer" />
                     <p style={{ color: 'red' }}>* indicates mandatory fields</p>
                 </div>
+            </form> :
+			<form id="newAnswerForm"
+            onSubmit={handleSubmit}
+            >
+                <h2>Answer Text*</h2>
+                <textarea name="aText" className="wordarea" placeholder="You can do this..."
+				defaultValue={props.edit.text}
+                ></textarea>
+                {error.aText && <div className="error-message">{error.aText}</div>}
+                <div id="bottom">
+                    <input id="post_answer_button" type="submit" value="Edit Answer" />
+					<button className="delete_button" type="button" 
+					onClick={() => handleAnswerDelete(props.edit._id)}
+					>Delete Answer</button>
+                    <p style={{ color: 'red' }}>* indicates mandatory fields</p>
+                </div>
             </form>
+			}
         </div>
     );
 }

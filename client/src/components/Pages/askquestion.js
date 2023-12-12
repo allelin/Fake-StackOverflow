@@ -69,6 +69,8 @@ export default function AskQuestion(props) {
 		} else if(tagArr.length > 5){
 			newError.qTags = "More than 5 Tags!";
 		} else if(!(tagArr.every(tag => tag.length < 11))) {
+			// console.log(tagArr);
+			// console.log(props.edit.tags);
 			newError.qTags = "Not all tags are of max length of 10!";
 		} else {
 			let res = await axios.post(`http://localhost:8000/verifytags`, {tags: tagArr}, { withCredentials: true });
@@ -84,6 +86,10 @@ export default function AskQuestion(props) {
 		setError(newError);
 
 		if(Object.values(newError).every(field => field === '')) {
+			let id = null;
+			if(props.edit) {
+				id = props.edit._id;
+			}
 			const newQuestion = {
 				title: qTitle,
 				text: qText,
@@ -91,6 +97,7 @@ export default function AskQuestion(props) {
 				tags: tagArr,
 				// username: props.user.username,
 				// email: props.user.email
+				id: id
 			}
 
 			// axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true })
@@ -110,8 +117,11 @@ export default function AskQuestion(props) {
 
 			try {
 				const res = await axios.post(`http://localhost:8000/postquestion`, newQuestion, { withCredentials: true });
-				props.handlePageSwap("home");
+				if(props.edit) {
+					props.setEdit(null);
+				}
 				props.handleSortChange("newest");
+				props.handlePageSwap("home");
 			} catch (err) {
 				// if (err.response && err.response.status === 403) {
 				// 	newError.qTags = err.response.data;
@@ -121,9 +131,23 @@ export default function AskQuestion(props) {
 			}
 		}
 	}
+
+	const handleDeleteQuestion = async (qid) => {
+        try {
+            const respond = await axios.get(`http://localhost:8000/deletequestion/${qid}`, { withCredentials: true });
+            // console.log(respond.data);
+            props.setUser(respond.data);
+			props.setEdit(null);
+			props.handleSortChange("newest");
+			props.handlePageSwap("home");
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
 	return (
 		<div id="right_bar">
-			<form id="newQuestionForm" 
+			{!props.edit ? <form id="newQuestionForm" 
 			onSubmit={handleSubmit}
 			>
 				<h2>Question Title*</h2>
@@ -150,7 +174,43 @@ export default function AskQuestion(props) {
 					<input id="post_question_button" type="submit" value="Post Question"/>
 					<p style={{color: 'red'}}>* indicates mandatory fields</p>
 				</div>
+			</form> :
+			<form id="newQuestionForm" 
+			onSubmit={handleSubmit}
+			>
+				<h2>Question Title*</h2>
+				<p>Limit title to 50 characters or less</p>
+				<input type="text" name="qTitle" className="wordbox" 
+				placeholder="How can I change an element's class with JavaScript?" 
+				defaultValue={props.edit.title}
+				/>
+				{error.qTitle && <div className="error-message">{error.qTitle}</div>}
+				<h2>Question Summary*</h2>
+				<p>Limit summary to 140 characters or less</p>
+				<input type="text" name="qSummary" className="wordbox" placeholder="I want to change the class of an element when I click on it. How can I do this?" 
+				defaultValue={props.edit.summary}/>
+				{error.qSummary && <div className="error-message">{error.qSummary}</div>}
+				<h2>Question Text*</h2>
+				<p>Add details</p>
+				<textarea name="qText" className="wordarea" placeholder="How can I change the class of an HTML element in response to an onclick or any other events using JavaScript?" 
+				defaultValue={props.edit.text}
+				></textarea>
+				{error.qText && <div className="error-message">{error.qText}</div>}
+				<h2>Tags*</h2>
+				<p>Add keywords separated by whitespace, no more than 5 tags of max length 10</p>
+				<input type="text" name="qTags" className="wordbox" placeholder="javascript html dom" 
+				defaultValue={props.edit.tags.reduce((acc, tag) => acc + tag.name + " ", "")}
+				/>
+				{error.qTags && <div className="error-message">{error.qTags}</div>}
+				<div id="bottom">
+					<input id="post_question_button" type="submit" value="Edit Question"/>
+					<button className="delete_button" type="button" 
+					onClick={() => handleDeleteQuestion(props.edit._id)}
+					>Delete Question</button>
+					<p style={{color: 'red'}}>* indicates mandatory fields</p>
+				</div>
 			</form>
+			}
 		</div>
 	);
 }
